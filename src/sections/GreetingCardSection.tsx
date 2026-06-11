@@ -1,5 +1,6 @@
-import { motion } from 'framer-motion';
-import { Heart } from 'lucide-react';
+import { motion, useInView } from 'framer-motion';
+import { Heart, Sparkles } from 'lucide-react';
+import { useRef, useEffect, useState } from 'react';
 
 const C = {
   background: '#FAF8F5',
@@ -10,20 +11,57 @@ const C = {
   caption: '#6B7280',
   border: '#E7E2DC',
   accent: '#C97A8B',
+  sage: '#A8BBA2',
 };
 
+function CountUp({ target, duration = 1400 }: { target: number; duration?: number }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true });
+
+  useEffect(() => {
+    if (!inView) return;
+    let start = 0;
+    const step = duration / target;
+    const timer = setInterval(() => {
+      start += 1;
+      setCount(start);
+      if (start >= target) clearInterval(timer);
+    }, step);
+    return () => clearInterval(timer);
+  }, [inView, target, duration]);
+
+  return <span ref={ref}>{count}</span>;
+}
+
+const paragraphs = [
+  "I honestly didn't know what to gift you, and then I thought... why not make something that feels a little more personal?",
+  "So here we are.",
+  "A random collection of questions, movies, songs, and tiny little things that reminded me of you while building this scrapbook.",
+  "No deep meaning behind everything, no hidden life lessons, no emotional damage. Just a small corner of the internet made specially for your birthday.",
+  "I hope you had fun answering the questions, collecting movie tickets, picking songs for your playlist, and going through all the chapters.",
+  "You're one of those people who somehow manages to stay dedicated, ambitious, chaotic, funny, and stubborn all at the same time. And honestly, that's what makes you... you.",
+  "I know the next few years are going to be full of exams, hospital duties, responsibilities, and a lot of caffeine. But I hope they also bring good memories, great people, random adventures, and enough reasons to smile.",
+  "Take care of yourself, keep chasing your goals, keep being annoying when necessary, and most importantly, don't forget to enjoy the journey along the way.",
+  "Wishing you a year filled with happiness, good health, success, and lots of moments worth remembering.",
+];
+
 export default function GreetingCardSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const inView = useInView(sectionRef, { once: true, margin: '-80px' });
+
   return (
     <section
       id="greeting-card"
+      ref={sectionRef}
       className="relative py-16 md:py-28 px-4 md:px-8"
-      style={{ background: C.background, minHeight: '100vh', display: 'flex', alignItems: 'center' }}
+      style={{ background: C.background }}
     >
       <div className="max-w-2xl mx-auto w-full">
         {/* Section header */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7 }}
           className="text-center mb-10"
         >
@@ -36,19 +74,85 @@ export default function GreetingCardSection() {
           >
             The Birthday Letter
           </h2>
-          <p
-            className="font-sacramento text-xl"
-            style={{ color: C.caption }}
-          >
+          <p className="font-sacramento text-xl" style={{ color: C.caption }}>
             A few words that deserved their own page.
           </p>
+        </motion.div>
+
+        {/* 22 Years badge */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.7 }}
+          animate={inView ? { opacity: 1, scale: 1 } : {}}
+          transition={{ duration: 0.6, delay: 0.2, type: 'spring', stiffness: 160 }}
+          className="flex justify-center mb-10"
+        >
+          <div
+            className="relative flex flex-col items-center justify-center"
+            style={{
+              width: '140px',
+              height: '140px',
+              borderRadius: '50%',
+              background: `linear-gradient(135deg, #FDE8EF 0%, #F9F3E8 50%, #E8F3EC 100%)`,
+              border: `2px solid ${C.border}`,
+              boxShadow: '0 8px 32px rgba(201,122,139,0.12)',
+            }}
+          >
+            {/* Rotating dashes ring */}
+            <svg
+              className="absolute inset-0 w-full h-full"
+              viewBox="0 0 140 140"
+              style={{ animation: 'spin 18s linear infinite' }}
+            >
+              <circle
+                cx="70" cy="70" r="64"
+                fill="none"
+                stroke={C.accent}
+                strokeWidth="1.5"
+                strokeDasharray="6 8"
+                opacity="0.4"
+              />
+            </svg>
+
+            <span
+              className="font-playfair font-bold leading-none"
+              style={{ fontSize: '52px', color: C.textPrimary, lineHeight: 1 }}
+            >
+              <CountUp target={22} duration={1200} />
+            </span>
+            <span
+              className="font-caveat text-sm mt-0.5"
+              style={{ color: C.accent, letterSpacing: '0.08em' }}
+            >
+              years
+            </span>
+
+            {/* Small sparkle dots */}
+            {[0, 60, 120, 180, 240, 300].map((deg, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, scale: 0 }}
+                animate={inView ? { opacity: [0, 1, 0], scale: [0, 1, 0] } : {}}
+                transition={{ duration: 2, delay: 0.8 + i * 0.12, repeat: Infinity, repeatDelay: 2 }}
+                style={{
+                  position: 'absolute',
+                  width: '5px',
+                  height: '5px',
+                  borderRadius: '50%',
+                  background: i % 2 === 0 ? C.accent : C.sage,
+                  top: `${50 - 46 * Math.cos((deg * Math.PI) / 180)}%`,
+                  left: `${50 + 46 * Math.sin((deg * Math.PI) / 180)}%`,
+                  transform: 'translate(-50%, -50%)',
+                }}
+              />
+            ))}
+          </div>
         </motion.div>
 
         {/* Letter paper */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.15 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, delay: 0.35 }}
           className="relative"
         >
           {/* Paper clip decoration */}
@@ -64,12 +168,23 @@ export default function GreetingCardSection() {
           />
 
           {/* Heart corner decoration */}
-          <div
-            className="absolute top-5 right-5 opacity-40 z-10"
-            style={{ color: C.accent }}
+          <motion.div
+            className="absolute top-5 right-5 z-10"
+            animate={{ scale: [1, 1.2, 1] }}
+            transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
+            style={{ opacity: 0.5 }}
           >
-            <Heart size={16} style={{ color: C.accent }} />
-          </div>
+            <Heart size={15} style={{ color: C.accent }} fill={C.accent} />
+          </motion.div>
+
+          {/* Sparkles top-left */}
+          <motion.div
+            className="absolute top-5 left-5 z-10"
+            animate={{ rotate: [0, 20, -10, 0], opacity: [0.4, 0.7, 0.4] }}
+            transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <Sparkles size={14} style={{ color: C.accent }} />
+          </motion.div>
 
           {/* Folded corner */}
           <div
@@ -97,85 +212,117 @@ export default function GreetingCardSection() {
               style={{
                 backgroundImage: 'repeating-linear-gradient(transparent, transparent 27px, #F0EDE8 27px, #F0EDE8 28px)',
                 backgroundPosition: '0 48px',
-                opacity: 0.4,
+                opacity: 0.35,
               }}
             />
 
             {/* Letter content */}
             <div className="relative">
-              {/* Greeting */}
-              <p
-                className="font-sacramento text-2xl mb-6"
+              {/* Greeting line */}
+              <motion.p
+                initial={{ opacity: 0, x: -10 }}
+                animate={inView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.5, delay: 0.5 }}
+                className="font-sacramento text-2xl mb-2"
                 style={{ color: C.accent }}
               >
                 To Gayatri Reddy,
-              </p>
+              </motion.p>
 
-              {/* Body paragraphs */}
-              <div className="space-y-5">
-                <p
-                  className="font-cormorant text-lg leading-relaxed"
-                  style={{ color: C.body, lineHeight: '1.75' }}
-                >
-                  Happy Birthdayyy
-                </p>
+              {/* Happy Birthday line */}
+              <motion.p
+                initial={{ opacity: 0, x: -10 }}
+                animate={inView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.5, delay: 0.62 }}
+                className="font-playfair text-xl font-semibold mb-6"
+                style={{ color: C.textPrimary }}
+              >
+                Happy Birthdayyy{' '}
+                <span style={{ fontFamily: 'sans-serif' }}>🎂</span>
+              </motion.p>
 
-                <p
-                  className="font-cormorant text-lg leading-relaxed"
-                  style={{ color: C.body, lineHeight: '1.75' }}
-                >
-                  I honestly didn't know what to gift you... so I made you a whole website, because why not?
-                  You're becoming a doctor, so clearly you deserve way more than just a generic "Happy Birthday" message.
-                </p>
-
-                <p
-                  className="font-cormorant text-lg leading-relaxed"
-                  style={{ color: C.body, lineHeight: '1.75' }}
-                >
-                  This scrapbook has your movie quiz (your favorite pastime), your music quiz (the songs that
-                  make you vibe), and this letter from yours truly.
-                </p>
-
-                <p
-                  className="font-cormorant text-lg leading-relaxed"
-                  style={{ color: C.body, lineHeight: '1.75' }}
-                >
-                  I wanted to do something personal, not just pick up some random gift. Every chapter here is
-                  essentially me saying: "I've paid attention." To the movies you love, the songs you play on
-                  repeat, the doctor you're becoming.
-                </p>
-
-                <p
-                  className="font-cormorant text-lg leading-relaxed"
-                  style={{ color: C.body, lineHeight: '1.75' }}
-                >
-                  Here's to another year of you crushing it — at med school, at life, at everything. May your
-                  Spotify wrapped always be fire, your movie choices impeccable, and your future patients
-                  realize how lucky they are.
-                </p>
-
-                <p
-                  className="font-cormorant text-lg leading-relaxed"
-                  style={{ color: C.body, lineHeight: '1.75' }}
-                >
-                  You deserve all the happiness in the world — and this is just my small, slightly techy way
-                  of showing you that.
-                </p>
+              {/* Body paragraphs with stagger */}
+              <div className="space-y-4">
+                {paragraphs.map((text, i) => (
+                  <motion.p
+                    key={i}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={inView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ duration: 0.45, delay: 0.7 + i * 0.08 }}
+                    className="font-cormorant text-lg leading-relaxed"
+                    style={{ color: C.body, lineHeight: '1.78' }}
+                  >
+                    {text}
+                  </motion.p>
+                ))}
               </div>
+
+              {/* Closing line */}
+              <motion.p
+                initial={{ opacity: 0, y: 8 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.45, delay: 0.7 + paragraphs.length * 0.08 }}
+                className="font-playfair font-semibold text-lg mt-5"
+                style={{ color: C.textPrimary }}
+              >
+                Happy Birthdayyy ra Pottiiiii{' '}
+                <span style={{ fontFamily: 'sans-serif' }}>🐷</span>
+              </motion.p>
+
+              {/* Divider */}
+              <motion.div
+                initial={{ scaleX: 0, opacity: 0 }}
+                animate={inView ? { scaleX: 1, opacity: 1 } : {}}
+                transition={{ duration: 0.5, delay: 1.55 }}
+                style={{
+                  height: '1px',
+                  background: `linear-gradient(to right, transparent, ${C.border}, transparent)`,
+                  margin: '28px 0',
+                  transformOrigin: 'left',
+                }}
+              />
 
               {/* Signature */}
-              <div className="mt-10 text-right">
-                <p
-                  className="font-sacramento text-2xl"
-                  style={{ color: C.accent }}
-                >
-                  — Yours, Always
+              <motion.div
+                initial={{ opacity: 0, y: 6 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.5, delay: 1.65 }}
+                className="text-right"
+              >
+                <p className="font-sacramento text-2xl" style={{ color: C.accent }}>
+                  — Hitesh
                 </p>
-              </div>
+              </motion.div>
             </div>
           </div>
         </motion.div>
+
+        {/* Footer hearts */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={inView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.6, delay: 1.8 }}
+          className="flex justify-center gap-3 mt-8"
+        >
+          {[0, 0.3, 0.6].map((delay, i) => (
+            <motion.div
+              key={i}
+              animate={{ y: [0, -5, 0] }}
+              transition={{ duration: 2, delay, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <Heart
+                size={i === 1 ? 16 : 12}
+                style={{ color: C.accent, opacity: i === 1 ? 0.7 : 0.45 }}
+                fill={C.accent}
+              />
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
+
+      <style>{`
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      `}</style>
     </section>
   );
 }
