@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Video as LucideIcon } from 'lucide-react';
+import { Check } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
 interface ToastProps {
   show: boolean;
