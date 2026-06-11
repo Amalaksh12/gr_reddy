@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 import './App.css';
 import HeroSection from './sections/HeroSection';
 import DoctorSection from './sections/DoctorSection';
@@ -6,9 +6,7 @@ import MovieSection from './sections/MovieSection';
 import MusicSection from './sections/MusicSection';
 import LittleThingsSection from './sections/LittleThingsSection';
 import GreetingCardSection from './sections/GreetingCardSection';
-import ClosingPage from './sections/ClosingPage';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, ArrowRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { ChapterProvider, useChapters } from './context/ChapterContext';
 
 const C = {
@@ -30,10 +28,6 @@ function ScrapbookContent() {
     updateScore,
   } = useChapters();
 
-  const [showCompletionModal, setShowCompletionModal] = useState(false);
-  const [completedChapter, setCompletedChapter] = useState<number | null>(null);
-  const [chapterScore, setChapterScore] = useState({ score: 0, max: 0 });
-
   useEffect(() => {
     const hash = window.location.hash;
     if (hash) {
@@ -49,20 +43,13 @@ function ScrapbookContent() {
     setCurrentChapter(chapter);
   }, [unlockChapter, setCurrentChapter]);
 
-  const handleChapterComplete = useCallback((chapterNum: number, score: number, max: number) => {
-    setCompletedChapter(chapterNum);
-    setChapterScore({ score, max });
-    setShowCompletionModal(true);
-  }, []);
-
-  const handleContinueFromModal = useCallback(() => {
-    setShowCompletionModal(false);
-    if (completedChapter && completedChapter < 6) {
+  const handleChapterComplete = useCallback((chapterNum: number) => {
+    if (chapterNum < 6) {
       setTimeout(() => {
-        handleUnlockChapter(completedChapter + 1);
+        handleUnlockChapter(chapterNum + 1);
       }, 100);
     }
-  }, [completedChapter, handleUnlockChapter]);
+  }, [handleUnlockChapter]);
 
   const handleBeginJourney = useCallback(() => {
     handleUnlockChapter(2);
@@ -81,19 +68,6 @@ function ScrapbookContent() {
       }
     }
   }, [currentChapter]);
-
-  const getChapterTitle = (num: number): string => {
-    const titles = [
-      '',
-      'The Story of Gayatri',
-      'Doctor Quiz Complete',
-      'Cinema Quiz Complete',
-      'Music Chapter Complete',
-      'Personality Complete',
-      'The Final Letter',
-    ];
-    return titles[num] || '';
-  };
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: C.cream, overflowX: 'hidden' }}>
@@ -134,146 +108,6 @@ function ScrapbookContent() {
         })}
       </div>
 
-      {/* Completion Modal */}
-      <AnimatePresence>
-        {showCompletionModal && completedChapter && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            style={{
-              position: 'fixed',
-              inset: 0,
-              zIndex: 100,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: 'rgba(0,0,0,0.3)',
-              padding: '20px',
-            }}
-            onClick={handleContinueFromModal}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                background: C.paper,
-                borderRadius: '16px',
-                padding: '32px',
-                maxWidth: '360px',
-                width: '100%',
-                boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-                border: `1px solid ${C.border}`,
-              }}
-            >
-              {/* Close button */}
-              <button
-                onClick={handleContinueFromModal}
-                style={{
-                  position: 'absolute',
-                  top: '16px',
-                  right: '16px',
-                  background: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: '4px',
-                }}
-              >
-                <X size={20} style={{ color: C.textSecondary }} />
-              </button>
-
-              {/* Check icon */}
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.1, type: 'spring' }}
-                style={{
-                  width: '48px',
-                  height: '48px',
-                  borderRadius: '50%',
-                  background: '#E5E5E5',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 16px',
-                }}
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={C.textPrimary} strokeWidth="2.5">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-              </motion.div>
-
-              <h3
-                style={{
-                  fontFamily: 'Playfair Display, serif',
-                  fontSize: '22px',
-                  fontWeight: 600,
-                  color: C.textPrimary,
-                  textAlign: 'center',
-                  marginBottom: '8px',
-                }}
-              >
-                {getChapterTitle(completedChapter)}
-              </h3>
-
-              {completedChapter >= 2 && completedChapter <= 5 && (
-                <p
-                  style={{
-                    fontFamily: 'Caveat, cursive',
-                    fontSize: '20px',
-                    color: C.textSecondary,
-                    textAlign: 'center',
-                    marginBottom: '24px',
-                  }}
-                >
-                  Score: {chapterScore.score} / {chapterScore.max}
-                </p>
-              )}
-
-              {completedChapter === 4 && (
-                <p
-                  style={{
-                    fontFamily: 'Caveat, cursive',
-                    fontSize: '18px',
-                    color: C.textSecondary,
-                    textAlign: 'center',
-                    marginBottom: '24px',
-                  }}
-                >
-                  Playlist Created
-                </p>
-              )}
-
-              <button
-                onClick={handleContinueFromModal}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  width: '100%',
-                  padding: '14px 24px',
-                  background: C.textPrimary,
-                  color: '#FFFFFF',
-                  border: 'none',
-                  borderRadius: '999px',
-                  fontFamily: 'Inter, sans-serif',
-                  fontWeight: 500,
-                  fontSize: '14px',
-                  cursor: 'pointer',
-                  transition: 'transform 0.2s',
-                }}
-              >
-                <span>Continue</span>
-                <ArrowRight size={16} />
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Main Content */}
       <main style={{ paddingBottom: '60px' }} className="md:pb-0">
         {currentChapter >= 1 && (
@@ -294,7 +128,7 @@ function ScrapbookContent() {
             transition={{ duration: 0.6 }}
           >
             <DoctorSection
-              onComplete={(score, max) => handleChapterComplete(2, score, max)}
+              onComplete={() => handleChapterComplete(2)}
               updateScore={(points) => updateScore('doctor', points)}
               doctorScore={scores.doctor}
             />
@@ -309,7 +143,7 @@ function ScrapbookContent() {
             transition={{ duration: 0.6 }}
           >
             <MovieSection
-              onComplete={(score, max) => handleChapterComplete(3, score, max)}
+              onComplete={() => handleChapterComplete(3)}
               updateScore={(points) => updateScore('movies', points)}
               movieScore={scores.movies}
             />
@@ -324,7 +158,7 @@ function ScrapbookContent() {
             transition={{ duration: 0.6 }}
           >
             <MusicSection
-              onComplete={() => handleChapterComplete(4, 0, 0)}
+              onComplete={() => handleChapterComplete(4)}
               updateScore={(points) => updateScore('music', points)}
               musicScore={scores.music}
             />
@@ -339,7 +173,7 @@ function ScrapbookContent() {
             transition={{ duration: 0.6 }}
           >
             <LittleThingsSection
-              onComplete={() => handleChapterComplete(5, 0, 0)}
+              onComplete={() => handleChapterComplete(5)}
               updateScore={(points) => updateScore('personality', points)}
               personalityScore={scores.personality}
             />
@@ -354,17 +188,6 @@ function ScrapbookContent() {
             transition={{ duration: 0.6 }}
           >
             <GreetingCardSection />
-          </motion.div>
-        )}
-
-        {currentChapter >= 6 && (
-          <motion.div
-            key="closing"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          >
-            <ClosingPage />
           </motion.div>
         )}
       </main>

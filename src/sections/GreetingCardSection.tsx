@@ -108,7 +108,7 @@ export default function GreetingCardSection() {
                 className="font-sacramento text-2xl mb-6"
                 style={{ color: C.accent }}
               >
-                My dearest Gayatri,
+                To Gayatri Reddy,
               </p>
 
               {/* Body paragraphs */}
@@ -117,89 +117,62 @@ export default function GreetingCardSection() {
                   className="font-cormorant text-lg leading-relaxed"
                   style={{ color: C.body, lineHeight: '1.75' }}
                 >
-                  Today is your day — and I wanted to mark it with something that captures
-                  even a small fraction of who you are. Not just the doctor you're becoming,
-                  but the whole person: the stories you love, the songs that stay in your
-                  head, the little things that make you entirely, wonderfully you.
+                  Happy Birthdayyy
                 </p>
 
                 <p
                   className="font-cormorant text-lg leading-relaxed"
                   style={{ color: C.body, lineHeight: '1.75' }}
                 >
-                  Every quiz, every vinyl record, every chapter in this scrapbook was
-                  made with one thought — that you deserve to feel celebrated. Not just
-                  for your achievements, but for the warmth you carry into every room.
+                  I honestly didn't know what to gift you... so I made you a whole website, because why not?
+                  You're becoming a doctor, so clearly you deserve way more than just a generic "Happy Birthday" message.
                 </p>
 
                 <p
                   className="font-cormorant text-lg leading-relaxed"
                   style={{ color: C.body, lineHeight: '1.75' }}
                 >
-                  Thank you for being curious, for dreaming loud, for caring deeply about
-                  the people around you. The world is better because you are in it — and this
-                  small scrapbook is my way of saying that out loud.
+                  This scrapbook has your movie quiz (your favorite pastime), your music quiz (the songs that
+                  make you vibe), and this letter from yours truly.
                 </p>
 
                 <p
                   className="font-cormorant text-lg leading-relaxed"
                   style={{ color: C.body, lineHeight: '1.75' }}
                 >
-                  Happy Birthday. May this year bring you everything you've been quietly
-                  hoping for, and a few beautiful surprises you never expected.
+                  I wanted to do something personal, not just pick up some random gift. Every chapter here is
+                  essentially me saying: "I've paid attention." To the movies you love, the songs you play on
+                  repeat, the doctor you're becoming.
+                </p>
+
+                <p
+                  className="font-cormorant text-lg leading-relaxed"
+                  style={{ color: C.body, lineHeight: '1.75' }}
+                >
+                  Here's to another year of you crushing it — at med school, at life, at everything. May your
+                  Spotify wrapped always be fire, your movie choices impeccable, and your future patients
+                  realize how lucky they are.
+                </p>
+
+                <p
+                  className="font-cormorant text-lg leading-relaxed"
+                  style={{ color: C.body, lineHeight: '1.75' }}
+                >
+                  You deserve all the happiness in the world — and this is just my small, slightly techy way
+                  of showing you that.
                 </p>
               </div>
 
               {/* Signature */}
               <div className="mt-10 text-right">
                 <p
-                  className="font-sacramento text-xl mb-1"
-                  style={{ color: C.caption }}
+                  className="font-sacramento text-2xl"
+                  style={{ color: C.accent }}
                 >
-                  Forever and always,
+                  — Yours, Always
                 </p>
-                <p
-                  className="font-playfair text-2xl font-bold"
-                  style={{ color: C.textPrimary }}
-                >
-                  Happy Birthday,
-                  <span style={{ color: C.accent }}> Gayatri Devi Reddy</span>
-                </p>
-                <motion.div
-                  animate={{ scale: [1, 1.15, 1] }}
-                  transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-                  className="inline-block mt-2"
-                >
-                  <Heart size={18} style={{ color: C.accent }} fill={C.accent} />
-                </motion.div>
               </div>
             </div>
-          </div>
-        </motion.div>
-
-        {/* Footer note */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="text-center mt-8"
-        >
-          <div
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full"
-            style={{
-              background: C.paper,
-              border: `1px solid ${C.border}`,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-            }}
-          >
-            <Heart size={13} style={{ color: C.accent }} />
-            <span
-              className="font-caveat text-base"
-              style={{ color: C.caption }}
-            >
-              Written with love
-            </span>
-            <Heart size={13} style={{ color: C.accent }} />
           </div>
         </motion.div>
       </div>
