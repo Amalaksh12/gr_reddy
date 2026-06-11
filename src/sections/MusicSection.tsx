@@ -1,17 +1,16 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
-import {
-  Music, Check, Disc3, Sparkles, Heart, Star, AudioWaveform
-} from 'lucide-react';
-import { Confetti } from '../components/CelebrationEffects';
+import { Check, Music, ChevronRight } from 'lucide-react';
 
 const C = {
-  background: '#F8F6F2',
+  background: '#FAF8F5',
   paper: '#FFFFFF',
-  textPrimary: '#1E293B',
+  textPrimary: '#1F2937',
   textSecondary: '#6B7280',
-  border: '#D6D3D1',
-  accent: '#C08497',
+  body: '#374151',
+  border: '#E7E2DC',
+  accent: '#C97A8B',
+  sage: '#A8BBA2',
 };
 
 interface MusicSectionProps {
@@ -21,355 +20,173 @@ interface MusicSectionProps {
 }
 
 const songs = [
-  {
-    id: 1,
-    title: 'Enna Sona',
-    movie: 'OK Jaanu',
-    mood: 'Golden Hour',
-    color: '#E6B98D',
-    note: '"Golden hour in a song."'
-  },
-  {
-    id: 2,
-    title: 'Zehnaseeb',
-    movie: 'Hasee Toh Phasee',
-    mood: 'Comfort Song',
-    color: '#A7C4A0',
-    note: '"Comfort music."'
-  },
-  {
-    id: 3,
-    title: 'Mast Magan',
-    movie: '2 States',
-    mood: 'Daydreaming',
-    color: '#B9AEDC',
-    note: '"For the daydreamers."'
-  },
-  {
-    id: 4,
-    title: 'Kabira Encore',
-    movie: 'Yeh Jawaani Hai Deewani',
-    mood: 'Nostalgia',
-    color: '#C08497',
-    note: '"Never gets old."'
-  },
-  {
-    id: 5,
-    title: 'Tum Se Hi',
-    movie: 'Jab We Met',
-    mood: 'Feels Like Home',
-    color: '#E6DDD4',
-    note: '"Feels like home."'
-  },
-  {
-    id: 6,
-    title: 'Hawayein',
-    movie: 'Jab Harry Met Sejal',
-    mood: 'Memories',
-    color: '#7D9F9A',
-    note: '"Like revisiting old memories."'
-  },
-  {
-    id: 7,
-    title: 'Shayad',
-    movie: 'Love Aaj Kal',
-    mood: 'Hope',
-    color: '#9B8AA6',
-    note: '"Maybe tomorrow."'
-  },
-  {
-    id: 8,
-    title: 'Pee Loon',
-    movie: 'Once Upon A Time In Mumbai',
-    mood: 'Late Night',
-    color: '#1E293B',
-    note: '"Those midnight thoughts."'
-  },
-  {
-    id: 9,
-    title: 'Tera Hone Laga Hoon',
-    movie: 'Ajab Prem Ki Ghazab Kahani',
-    mood: 'Romance',
-    color: '#D4A5A5',
-    note: '"Falling in love vibes."'
-  },
-  {
-    id: 10,
-    title: 'Raabta',
-    movie: 'Agent Vinod',
-    mood: 'Soulful',
-    color: '#B8A088',
-    note: '"When souls connect."'
-  },
-  {
-    id: 11,
-    title: 'Agar Tum Saath Ho',
-    movie: 'Tamasha',
-    mood: 'Emotional',
-    color: '#6B8E8E',
-    note: '"For the deeply felt moments."'
-  },
-  {
-    id: 12,
-    title: 'Khairiyat',
-    movie: 'Chhichhore',
-    mood: 'Bittersweet',
-    color: '#9CA3AF',
-    note: '"Hope in goodbye."'
-  },
-  {
-    id: 13,
-    title: 'O Saathi',
-    movie: 'Baaghi 2',
-    mood: 'Devotion',
-    color: '#8B7355',
-    note: '"Unwavering love."'
-  },
-  {
-    id: 14,
-    title: 'Iktara',
-    movie: 'Wake Up Sid',
-    mood: 'Dreamy',
-    color: '#7BA3A8',
-    note: '"Finding your path."'
-  },
-  {
-    id: 15,
-    title: 'Ilahi',
-    movie: 'Yeh Jawaani Hai Deewani',
-    mood: 'Wanderlust',
-    color: '#E8A87C',
-    note: '"Chasing dreams."'
-  },
-  {
-    id: 16,
-    title: 'Phir Le Aya Dil',
-    movie: 'Barfi!',
-    mood: 'Longing',
-    color: '#A08CA8',
-    note: '"Love that lingers."'
-  },
+  { id: 1, title: 'Enna Sona', movie: 'OK Jaanu', color: '#D4956A', textColor: '#fff' },
+  { id: 2, title: 'Zehnaseeb', movie: 'Hasee Toh Phasee', color: '#A8BBA2', textColor: '#1F2937' },
+  { id: 3, title: 'Mast Magan', movie: '2 States', color: '#B8A7D9', textColor: '#1F2937' },
+  { id: 4, title: 'Kabira Encore', movie: 'YJHD', color: '#C97A8B', textColor: '#fff' },
+  { id: 5, title: 'Tum Se Hi', movie: 'Jab We Met', color: '#8BAAB3', textColor: '#fff' },
+  { id: 6, title: 'Raabta', movie: 'Agent Vinod', color: '#7D9B8C', textColor: '#fff' },
+  { id: 7, title: 'Agar Tum Saath Ho', movie: 'Tamasha', color: '#B5887A', textColor: '#fff' },
+  { id: 8, title: 'Iktara', movie: 'Wake Up Sid', color: '#9AADA7', textColor: '#1F2937' },
+  { id: 9, title: 'Shayad', movie: 'Love Aaj Kal', color: '#BBA8C8', textColor: '#1F2937' },
+  { id: 10, title: 'Pee Loon', movie: 'Once Upon A Time', color: '#5C7A9A', textColor: '#fff' },
+  { id: 11, title: 'Hawayein', movie: 'Jab Harry Met Sejal', color: '#8C9E7A', textColor: '#fff' },
+  { id: 12, title: 'Khairiyat', movie: 'Chhichhore', color: '#909090', textColor: '#fff' },
+  { id: 13, title: 'Safarnama', movie: 'Tamasha', color: '#C4A876', textColor: '#1F2937' },
+  { id: 14, title: 'Ilahi', movie: 'YJHD', color: '#D4876A', textColor: '#fff' },
+  { id: 15, title: 'Vintunnava', movie: 'Dear Comrade', color: '#7AB8C4', textColor: '#1F2937' },
+  { id: 16, title: 'Nee Choopule', movie: 'Geetha Govindam', color: '#C4956A', textColor: '#fff' },
+  { id: 17, title: 'Inthandham', movie: 'Bheeshma', color: '#8BAA8C', textColor: '#1F2937' },
+  { id: 18, title: 'Maate Vinadhuga', movie: 'Taxiwaala', color: '#9A7EC4', textColor: '#fff' },
 ];
 
-const playlistSummaries: Record<string, string> = {
-  comfort: "Your playlist is filled with comfort, comfort, a comfort, nostalgia, and songs that feel like home.",
-  dreamer: "A playlist made for dreamers, hopeless romantics, and people who always find meaning in music.",
-  memories: "Some songs are more than music. They're memories waiting to be revisited.",
-  romantic: "Love stories, golden moments, and the feeling of butterflies—all captured in your playlist.",
-  soulful: "Your playlist speaks to the soul—deep, meaningful, and beautifully introspective.",
-  default: "A beautiful collection of songs that tell your story.",
-};
+const rotations = [-4, 3, -2, 5, -3, 4, -5, 2, -3, 4, -1, 3, -4, 2, -3, 5, -2, 3];
 
-function getPlaylistSummary(selectedIds: number[]): string {
-  const selected = selectedIds.map(id => songs.find(s => s.id === id)).filter(Boolean);
-  const moods = selected.map(s => s?.mood);
-
-  if (moods.includes('Comfort Song') && moods.includes('Nostalgia') && moods.includes('Feels Like Home')) {
-    return playlistSummaries.comfort;
-  }
-  if (moods.includes('Daydreaming') && moods.includes('Romance') && moods.includes('Golden Hour')) {
-    return playlistSummaries.dreamer;
-  }
-  if (moods.includes('Nostalgia') && moods.includes('Memories') && moods.includes('Soulful')) {
-    return playlistSummaries.memories;
-  }
-  if (moods.includes('Romance') && moods.includes('Golden Hour') && moods.includes('Hope')) {
-    return playlistSummaries.romantic;
-  }
-  if (moods.includes('Soulful') && moods.includes('Late Night')) {
-    return playlistSummaries.soulful;
-  }
-
-  return playlistSummaries.default;
-}
-
-// Vinyl Record Component
 function VinylRecord({
   song,
   isSelected,
   onSelect,
-  index
+  rotation,
+  delay,
 }: {
   song: typeof songs[0];
   isSelected: boolean;
   onSelect: () => void;
-  index: number;
+  rotation: number;
+  delay: number;
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30, rotate: -10 }}
-      animate={{ opacity: 1, y: 0, rotate: 0 }}
-      transition={{ delay: index * 0.06 }}
-      whileHover={{ scale: 1.05, y: -5 }}
-      onClick={() => onSelect()}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0, rotate: isSelected ? rotation * 0.3 : rotation }}
+      transition={{ duration: 0.5, delay }}
+      whileHover={{ scale: 1.08, rotate: 0, y: -6, zIndex: 20 }}
+      onClick={onSelect}
       className="cursor-pointer relative"
+      style={{ zIndex: isSelected ? 10 : 1 }}
     >
-      {/* Vinyl Record */}
+      {/* Vinyl disc */}
       <motion.div
         animate={isSelected ? { rotate: 360 } : { rotate: 0 }}
-        transition={isSelected ? { duration: 8, repeat: Infinity, ease: 'linear' } : { duration: 0.5 }}
-        className="relative w-32 h-32 md:w-36 md:h-36 rounded-full shadow-xl mx-auto"
+        transition={isSelected ? { duration: 10, repeat: Infinity, ease: 'linear' } : { duration: 0.4 }}
+        className="relative rounded-full mx-auto"
         style={{
-          background: 'linear-gradient(135deg, #1E293B 0%, #374151 50%, #1E293B 100%)',
+          width: '112px',
+          height: '112px',
+          background: '#1a1a1a',
           boxShadow: isSelected
-            ? `0 8px 30px ${song.color}60, 0 0 0 4px ${song.color}40`
-            : '0 8px 20px rgba(0,0,0,0.25)',
+            ? `0 8px 28px ${song.color}55, 0 0 0 3px ${song.color}50`
+            : '0 4px 18px rgba(0,0,0,0.35)',
         }}
       >
-        {/* Grooves */}
-        {[...Array(4)].map((_, i) => (
+        {/* Groove rings */}
+        {[40, 56, 70, 84].map((size, i) => (
           <div
             key={i}
-            className="absolute rounded-full border border-gray-600/30"
+            className="absolute rounded-full"
             style={{
-              width: `${70 + i * 12}%`,
-              height: `${70 + i * 12}%`,
-              top: `${15 - i * 6}%`,
-              left: `${15 - i * 6}%`,
+              width: `${size}%`,
+              height: `${size}%`,
+              top: `${(100 - size) / 2}%`,
+              left: `${(100 - size) / 2}%`,
+              border: '1px solid rgba(255,255,255,0.06)',
             }}
           />
         ))}
 
-        {/* Center Label */}
+        {/* Center label */}
         <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 md:w-16 md:h-16 rounded-full flex flex-col items-center justify-center"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full flex flex-col items-center justify-center px-0.5"
           style={{
+            width: '44px',
+            height: '44px',
             background: song.color,
-            boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.3)',
+            boxShadow: 'inset 0 1px 6px rgba(0,0,0,0.3)',
           }}
         >
-          <Music className="w-4 h-4 text-white mb-0.5" />
-          <p className="font-inter text-[7px] text-white/90 font-semibold text-center px-1 truncate w-full">
-            {song.title.split(' ')[0]}
+          <Music style={{ width: '9px', height: '9px', color: song.textColor, opacity: 0.85, flexShrink: 0 }} />
+          <p
+            className="font-inter font-bold text-center leading-tight mt-0.5"
+            style={{
+              fontSize: '5.5px',
+              color: song.textColor,
+              maxWidth: '36px',
+              overflow: 'hidden',
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              wordBreak: 'break-word',
+            }}
+          >
+            {song.title}
           </p>
         </div>
 
-        {/* Shine effect */}
+        {/* Shine overlay */}
         <div
           className="absolute inset-0 rounded-full pointer-events-none"
-          style={{
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%, transparent 100%)',
-          }}
+          style={{ background: 'radial-gradient(ellipse at 32% 28%, rgba(255,255,255,0.14) 0%, transparent 55%)' }}
         />
       </motion.div>
 
-      {/* Song Info */}
-      <motion.div
-        className="text-center mt-3"
-        animate={isSelected ? { scale: 1.05 } : { scale: 1 }}
-      >
-        <p className="font-playfair text-xs font-semibold" style={{ color: C.textPrimary }}>
+      {/* Song info */}
+      <div className="text-center mt-2.5" style={{ maxWidth: '112px' }}>
+        <p
+          className="font-playfair font-semibold leading-tight"
+          style={{ fontSize: '10.5px', color: C.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+        >
           {song.title}
         </p>
-        <p className="font-caveat text-[10px] mt-0.5" style={{ color: C.textSecondary }}>
+        <p
+          className="font-caveat leading-tight"
+          style={{ fontSize: '10px', color: C.textSecondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+        >
           {song.movie}
         </p>
-      </motion.div>
+      </div>
 
-      {/* Selected indicator */}
+      {/* Selected badge */}
       {isSelected && (
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="absolute -top-2 -right-2 w-7 h-7 rounded-full flex items-center justify-center shadow-lg"
-          style={{ background: '#A7C4A0' }}
+          transition={{ type: 'spring', stiffness: 300 }}
+          className="absolute rounded-full flex items-center justify-center"
+          style={{
+            width: '20px',
+            height: '20px',
+            top: '-4px',
+            right: '-2px',
+            background: C.sage,
+            boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+            zIndex: 10,
+          }}
         >
-          <Check className="w-3.5 h-3.5 text-white" />
+          <Check style={{ width: '10px', height: '10px', color: '#fff' }} />
         </motion.div>
       )}
     </motion.div>
   );
 }
 
-// Playlist Summary Card Component
-function PlaylistSummaryCard({ songs: selectedSongs }: { songs: typeof songs }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-xl p-6 shadow-xl mx-auto max-w-lg"
-      style={{ border: `1px solid ${C.border}` }}
-    >
-      {/* Title */}
-      <div className="text-center mb-4">
-        <p className="font-sacramento text-2xl" style={{ color: C.accent }}>
-          Gayatri's Playlist
-        </p>
-        <p className="font-caveat text-sm" style={{ color: C.textSecondary }}>
-          {selectedSongs.length} songs selected
-        </p>
-      </div>
-
-      {/* Song list */}
-      <div className="space-y-2 max-h-64 overflow-y-auto">
-        {selectedSongs.map((song, i) => (
-          <motion.div
-            key={song.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: i * 0.05 }}
-            className="flex items-center gap-3 p-2 rounded-lg"
-          >
-            <span
-              className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white"
-              style={{ background: song.color }}
-            >
-              {i + 1}
-            </span>
-            <div className="flex-1">
-              <p className="font-playfair text-sm font-semibold" style={{ color: C.textPrimary }}>
-                {song.title}
-              </p>
-              <p className="font-caveat text-xs" style={{ color: C.textSecondary }}>
-                {song.movie}
-              </p>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Decorative elements */}
-      <div className="flex justify-center gap-2 mt-4">
-        <Heart className="w-4 h-4" style={{ color: `${C.accent}30` }} />
-        <Music className="w-4 h-4" style={{ color: `${C.accent}30` }} />
-        <Star className="w-4 h-4" style={{ color: `${C.accent}30` }} />
-      </div>
-    </motion.div>
-  );
-}
-
-export default function MusicSection({ onComplete, updateScore, musicScore: _musicScore }: MusicSectionProps) {
-  const [phase, setPhase] = useState<'intro' | 'select' | 'complete'>('intro');
+export default function MusicSection({ onComplete, updateScore }: MusicSectionProps) {
+  const [phase, setPhase] = useState<'canvas' | 'complete'>('canvas');
   const [selectedSongs, setSelectedSongs] = useState<number[]>([]);
-  const [showConfetti, setShowConfetti] = useState(false);
 
-  const handleExplore = () => {
-    setPhase('select');
-  };
-
-  const toggleSongSelection = (songId: number) => {
-    if (selectedSongs.includes(songId)) {
-      setSelectedSongs(prev => prev.filter(id => id !== songId));
-    } else {
-      setSelectedSongs(prev => [...prev, songId]);
-    }
+  const toggleSong = (id: number) => {
+    setSelectedSongs(prev =>
+      prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]
+    );
   };
 
   const handleCreatePlaylist = () => {
-    if (selectedSongs.length > 0) {
-      updateScore(50);
-      setShowConfetti(true);
-      setTimeout(() => {
-        setPhase('complete');
-      }, 1500);
-    }
+    updateScore(50);
+    setPhase('complete');
   };
 
-  const handleContinue = () => {
-    onComplete();
-  };
-
-  const selectedSongDetails = selectedSongs.map(id => songs.find(s => s.id === id)).filter(Boolean) as typeof songs;
+  const selectedDetails = selectedSongs
+    .map(id => songs.find(s => s.id === id))
+    .filter(Boolean) as typeof songs;
 
   return (
     <section
@@ -377,290 +194,222 @@ export default function MusicSection({ onComplete, updateScore, musicScore: _mus
       className="relative py-16 md:py-24 px-4 md:px-8"
       style={{ background: C.background }}
     >
-      {/* Background decorations */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-40 h-40 rounded-full blur-3xl" style={{ background: `${C.accent}15` }} />
-        <div className="absolute bottom-40 right-20 w-60 h-60 rounded-full blur-3xl" style={{ background: '#A7C4A010' }} />
-
-        {/* Floating music notes */}
-        {[...Array(4)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute"
-            style={{
-              left: `${15 + i * 20}%`,
-              top: `${20 + (i % 2) * 30}%`,
-            }}
-            animate={{
-              y: [0, -20, 0],
-              opacity: [0.15, 0.35, 0.15],
-            }}
-            transition={{
-              duration: 4 + i,
-              repeat: Infinity,
-              delay: i * 0.8,
-            }}
+      <div className="max-w-5xl mx-auto">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-12"
+        >
+          <p className="font-caveat text-lg mb-2" style={{ color: C.accent }}>
+            CHAPTER 4
+          </p>
+          <h2
+            className="font-playfair text-3xl md:text-4xl font-bold mb-3"
+            style={{ color: C.textPrimary }}
           >
-            <Music className="w-5 h-5" style={{ color: `${C.accent}20` }} />
-          </motion.div>
-        ))}
-      </div>
-
-      <div className="max-w-6xl mx-auto relative">
-        {/* Section header */}
-        <div className="text-center mb-12">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <p className="font-caveat text-lg mb-2" style={{ color: C.accent }}>
-              CHAPTER 4
-            </p>
-            <h2 className="font-playfair text-3xl md:text-4xl font-bold mb-3" style={{ color: C.textPrimary }}>
-              The Soundtrack <span style={{ color: C.accent }}>I Picked For You</span>
-            </h2>
-            <p className="font-caveat text-base" style={{ color: C.textSecondary }}>
-              Select all the songs that belong in your perfect playlist.
-            </p>
-          </motion.div>
-        </div>
+            The Soundtrack of <span style={{ color: C.accent }}>Her Life</span>
+          </h2>
+          <p className="font-cormorant text-lg" style={{ color: C.body }}>
+            Every song tells a story.
+          </p>
+          <p className="font-cormorant text-base mt-1" style={{ color: C.textSecondary }}>
+            Pick the ones that deserve a place in your playlist.
+          </p>
+        </motion.div>
 
         <AnimatePresence mode="wait">
-          {/* INTRO PHASE */}
-          {phase === 'intro' && (
+          {phase === 'canvas' && (
             <motion.div
-              key="intro"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="max-w-2xl mx-auto"
-            >
-              {/* Intro Text */}
-              <div className="text-center mb-10">
-                <div
-                  className="rounded-2xl p-6 md:p-8 mb-8"
-                  style={{ background: C.paper, border: `1px solid ${C.border}` }}
-                >
-                  <p className="font-cormorant text-base md:text-lg leading-relaxed" style={{ color: C.textSecondary }}>
-                    Every person has a soundtrack.
-                  </p>
-                  <p className="font-cormorant text-base md:text-lg leading-relaxed mt-2" style={{ color: C.textSecondary }}>
-                    Some songs become memories. Some become comfort.
-                  </p>
-                  <p className="font-cormorant text-base md:text-lg leading-relaxed mt-2" style={{ color: C.textSecondary }}>
-                    And some never leave the playlist no matter how many years pass.
-                  </p>
-                  <div className="my-6" style={{ borderTop: `1px dashed ${C.border}` }} />
-                  <p className="font-caveat text-lg md:text-xl" style={{ color: C.accent }}>
-                    These are the songs that reminded me of you.
-                  </p>
-                </div>
-
-                {/* Decorative vinyl stack */}
-                <div className="flex justify-center gap-3 mb-8">
-                  {[...Array(3)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, rotate: -20, y: 50 }}
-                      animate={{ opacity: 0.7 - i * 0.15, rotate: i * 8, y: 0 }}
-                      transition={{ delay: i * 0.2 }}
-                      className="w-16 h-16 rounded-full"
-                      style={{
-                        background: 'linear-gradient(135deg, #1E293B, #374151)',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.25)',
-                      }}
-                    >
-                      <div className="w-7 h-7 rounded-full mx-auto mt-4" style={{ background: [C.accent, '#A7C4A0', '#B9AEDC'][i] }} />
-                    </motion.div>
-                  ))}
-                </div>
-
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={handleExplore}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    background: C.textPrimary,
-                    color: '#FFFFFF',
-                    border: 'none',
-                    borderRadius: '999px',
-                    padding: '14px 32px',
-                    fontFamily: 'Inter, sans-serif',
-                    fontWeight: 500,
-                    fontSize: '14px',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <AudioWaveform className="w-5 h-5" />
-                  <span>Open The Vinyl Wall</span>
-                </motion.button>
-              </div>
-            </motion.div>
-          )}
-
-          {/* SELECT PHASE */}
-          {phase === 'select' && (
-            <motion.div
-              key="select"
+              key="canvas"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              {/* Instruction */}
-              <div className="text-center mb-8">
-                <p className="font-caveat text-lg" style={{ color: C.textSecondary }}>
-                  Click on the vinyls to build your playlist. No restrictions.
-                </p>
-              </div>
-
-              {/* Vinyl Wall Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8 mb-10">
-                {songs.map((song, index) => (
-                  <VinylRecord
-                    key={song.id}
-                    song={song}
-                    isSelected={selectedSongs.includes(song.id)}
-                    onSelect={() => toggleSongSelection(song.id)}
-                    index={index}
-                  />
-                ))}
-              </div>
-
-              {/* Selection Counter */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-center mb-8"
+              {/* Vinyl canvas */}
+              <div
+                className="rounded-2xl p-8 md:p-12 mb-8"
+                style={{
+                  background: C.paper,
+                  border: `1px solid ${C.border}`,
+                  boxShadow: '0 4px 24px rgba(0,0,0,0.05)',
+                }}
               >
                 <div
-                  className="inline-flex items-center gap-3 px-6 py-3 rounded-full"
-                  style={{ background: C.paper, border: `1px solid ${C.border}` }}
-                >
-                  <Disc3 className="w-5 h-5" style={{ color: C.accent }} />
-                  <span className="font-caveat text-lg" style={{ color: C.textSecondary }}>
-                    {selectedSongs.length} song{selectedSongs.length !== 1 ? 's' : ''} selected
-                  </span>
-
-                  {selectedSongs.length > 0 && (
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="flex items-center gap-1 px-3 py-1 rounded-full"
-                      style={{ background: '#C8DCC650' }}
-                    >
-                      <Check className="w-3.5 h-3.5" style={{ color: '#059669' }} />
-                      <span className="font-caveat text-sm" style={{ color: '#059669' }}>Ready!</span>
-                    </motion.div>
-                  )}
-                </div>
-              </motion.div>
-
-              {/* Create Playlist Button */}
-              <div className="text-center">
-                <motion.button
-                  whileHover={selectedSongs.length > 0 ? { scale: 1.02 } : {}}
-                  whileTap={selectedSongs.length > 0 ? { scale: 0.98 } : {}}
-                  onClick={handleCreatePlaylist}
-                  disabled={selectedSongs.length === 0}
                   style={{
-                    background: selectedSongs.length > 0 ? C.textPrimary : '#D1D5DB',
-                    color: selectedSongs.length > 0 ? '#FFFFFF' : '#9CA3AF',
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
+                    gap: '24px 20px',
+                    justifyItems: 'center',
+                  }}
+                >
+                  {songs.map((song, index) => (
+                    <VinylRecord
+                      key={song.id}
+                      song={song}
+                      isSelected={selectedSongs.includes(song.id)}
+                      onSelect={() => toggleSong(song.id)}
+                      rotation={rotations[index % rotations.length]}
+                      delay={index * 0.035}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Selected playlist preview */}
+              {selectedSongs.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-8"
+                >
+                  <div
+                    className="rounded-2xl p-6"
+                    style={{ background: C.paper, border: `1px solid ${C.border}` }}
+                  >
+                    <h3
+                      className="font-sacramento text-2xl text-center mb-4"
+                      style={{ color: C.accent }}
+                    >
+                      Gayatri's Playlist
+                    </h3>
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      {selectedDetails.map(song => (
+                        <motion.div
+                          key={song.id}
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+                          style={{
+                            background: `${song.color}18`,
+                            border: `1px solid ${song.color}35`,
+                          }}
+                        >
+                          <div
+                            className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                            style={{ background: song.color }}
+                          />
+                          <span
+                            className="font-inter font-medium"
+                            style={{ fontSize: '12px', color: C.textPrimary }}
+                          >
+                            {song.title}
+                          </span>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Counter + CTA */}
+              <div className="text-center">
+                <p className="font-caveat text-base mb-4" style={{ color: C.textSecondary }}>
+                  {selectedSongs.length === 0
+                    ? 'Click on a vinyl to add it to your playlist'
+                    : selectedSongs.length < 5
+                    ? `${selectedSongs.length} selected — ${5 - selectedSongs.length} more to continue`
+                    : `${selectedSongs.length} songs selected`}
+                </p>
+
+                <motion.button
+                  whileHover={selectedSongs.length >= 5 ? { scale: 1.02, y: -2 } : {}}
+                  whileTap={selectedSongs.length >= 5 ? { scale: 0.98 } : {}}
+                  onClick={handleCreatePlaylist}
+                  disabled={selectedSongs.length < 5}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    background: selectedSongs.length >= 5 ? C.textPrimary : '#D1D5DB',
+                    color: selectedSongs.length >= 5 ? '#FFFFFF' : '#9CA3AF',
                     border: 'none',
                     borderRadius: '999px',
                     padding: '14px 32px',
                     fontFamily: 'Inter, sans-serif',
                     fontWeight: 500,
                     fontSize: '14px',
-                    cursor: selectedSongs.length > 0 ? 'pointer' : 'not-allowed',
+                    cursor: selectedSongs.length >= 5 ? 'pointer' : 'not-allowed',
                     transition: 'all 0.3s ease',
                   }}
                 >
-                  {selectedSongs.length > 0
-                    ? 'Create My Playlist'
-                    : 'Select at least one song'
-                  }
+                  <span>Create My Playlist</span>
+                  <ChevronRight size={16} />
                 </motion.button>
               </div>
             </motion.div>
           )}
 
-          {/* COMPLETE PHASE */}
           {phase === 'complete' && (
             <motion.div
               key="complete"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="max-w-2xl mx-auto"
+              className="max-w-lg mx-auto"
             >
-              {/* Playlist Saved Title */}
-              <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="text-center mb-10"
+              <div
+                className="rounded-2xl p-8 text-center"
+                style={{
+                  background: C.paper,
+                  border: `1px solid ${C.border}`,
+                  boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
+                }}
               >
                 <motion.div
-                  animate={{ rotate: [0, -5, 5, 0] }}
-                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-                  className="inline-block mb-4"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: 'spring', stiffness: 200, delay: 0.1 }}
+                  className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-5"
+                  style={{ background: C.sage }}
                 >
-                  <div
-                    className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg mx-auto"
-                    style={{ background: '#C8DCC6' }}
-                  >
-                    <Check className="w-7 h-7 text-white" />
-                  </div>
+                  <Check style={{ width: '24px', height: '24px', color: '#fff' }} />
                 </motion.div>
 
-                <h3 className="font-playfair text-2xl md:text-3xl font-bold mb-3" style={{ color: C.textPrimary }}>
-                  Playlist Created
+                <h3
+                  className="font-playfair text-2xl font-bold mb-2"
+                  style={{ color: C.textPrimary }}
+                >
+                  Playlist Complete
                 </h3>
+                <p
+                  className="font-cormorant text-base mb-6"
+                  style={{ color: C.textSecondary }}
+                >
+                  A collection of comfort songs, memories, and favorite moments.
+                </p>
 
-                <div className="flex justify-center gap-2 my-4">
-                  <Star className="w-4 h-4" style={{ color: C.accent }} />
-                  <Heart className="w-4 h-4" style={{ color: '#A7C4A0' }} />
-                  <Star className="w-4 h-4" style={{ color: '#B9AEDC' }} />
+                <div className="flex flex-wrap gap-2 justify-center mb-6">
+                  {selectedDetails.map(song => (
+                    <div
+                      key={song.id}
+                      className="flex items-center gap-1.5 px-3 py-1 rounded-full"
+                      style={{
+                        background: `${song.color}18`,
+                        border: `1px solid ${song.color}35`,
+                      }}
+                    >
+                      <div
+                        className="w-2 h-2 rounded-full flex-shrink-0"
+                        style={{ background: song.color }}
+                      />
+                      <span
+                        className="font-inter font-medium"
+                        style={{ fontSize: '11px', color: C.textPrimary }}
+                      >
+                        {song.title}
+                      </span>
+                    </div>
+                  ))}
                 </div>
 
-                <p className="font-caveat text-base" style={{ color: C.textSecondary }}>
-                  Some songs stay on repeat for a reason.
-                </p>
-              </motion.div>
-
-              {/* Playlist Summary Card */}
-              <PlaylistSummaryCard songs={selectedSongDetails} />
-
-              {/* Playlist Summary */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="rounded-2xl p-5 mt-6"
-                style={{ background: C.paper, border: `1px dashed ${C.accent}` }}
-              >
-                <div className="flex items-center justify-center gap-2 mb-3">
-                  <Sparkles className="w-4 h-4" style={{ color: C.accent }} />
-                  <p className="font-caveat text-base" style={{ color: C.accent }}>
-                    Your Playlist Says
-                  </p>
-                </div>
-                <p className="font-cormorant text-base text-center italic" style={{ color: C.textSecondary }}>
-                  {getPlaylistSummary(selectedSongs)}
-                </p>
-              </motion.div>
-
-              {/* Continue Button */}
-              <div className="text-center mt-8">
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
+                  whileHover={{ scale: 1.02, y: -2 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={handleContinue}
+                  onClick={onComplete}
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '10px',
+                    gap: '8px',
                     background: C.textPrimary,
                     color: '#FFFFFF',
                     border: 'none',
@@ -672,15 +421,14 @@ export default function MusicSection({ onComplete, updateScore, musicScore: _mus
                     cursor: 'pointer',
                   }}
                 >
-                  <span>Continue The Story</span>
+                  <span>Continue</span>
+                  <ChevronRight size={16} />
                 </motion.button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
-
-      <Confetti show={showConfetti} />
     </section>
   );
 }
