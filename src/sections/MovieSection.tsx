@@ -1,124 +1,130 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
-import { Film, Clapperboard, Check, X, Award, Star } from 'lucide-react';
-import { ScrollReveal } from '../components/ui/ScrollReveal';
-import { Confetti } from '../components/CelebrationEffects';
+import { Film, Clapperboard, Check, X, ChevronRight, Award } from 'lucide-react';
+
+const C = {
+  background: '#F8F6F2',
+  paper: '#FFFFFF',
+  textPrimary: '#1E293B',
+  textSecondary: '#6B7280',
+  border: '#D6D3D1',
+};
 
 interface MovieSectionProps {
-  onComplete: () => void;
+  onComplete: (score: number, max: number) => void;
   updateScore: (points: number) => void;
   movieScore: number;
 }
 
 const movieQuestions = [
   {
-    question: "In '2 States', what cultures do Krish and Ananya come from?",
+    question: "Which movie introduced the famous pair Karthik and Jessie?",
+    options: ["Fidaa", "Ye Maaya Chesave", "Majili", "Orange"],
+    correct: 1,
+  },
+  {
+    question: "What is Adi's profession in OK Jaanu?",
+    options: ["Chef", "Game Developer", "Doctor", "Architect"],
+    correct: 1,
+  },
+  {
+    question: "In Tamasha, Ved struggles between reality and his true passion. What does he dream of becoming?",
+    options: ["Doctor", "Engineer", "Storyteller", "Musician"],
+    correct: 2,
+  },
+  {
+    question: "In Ye Maaya Chesave, who falls in love first?",
+    options: ["Jessie", "Karthik", "Both together", "Neither"],
+    correct: 1,
+  },
+  {
+    question: "Which popular song from Orange became a fan favorite?",
+    options: ["Rooba Rooba", "Hello Rammante", "Samajavaragamana", "Inkem Inkem"],
+    correct: 0,
+  },
+  {
+    question: "In Hasee Toh Phasee, Nikhil is initially engaged to whom?",
+    options: ["Meeta", "Karishma", "Naina", "Tara"],
+    correct: 1,
+  },
+  {
+    question: "In 2 States, Krish and Ananya come from which two cultures?",
     options: ["Tamil & Punjabi", "Telugu & Bengali", "Punjabi & Tamil", "Gujarati & Malayali"],
     correct: 2,
-    movie: "2 States",
   },
   {
-    question: "In 'OK Jaanu', what life decision do Adi and Tara struggle with?",
-    options: ["Marriage vs Career", "Moving abroad", "Long-distance relationship", "Family approval"],
-    correct: 0,
-    movie: "OK Jaanu",
-  },
-  {
-    question: "In 'Majili', what sport did Poorna (Naga Chaitanya) play professionally?",
+    question: "In Majili, what sport did Poorna play professionally?",
     options: ["Football", "Cricket", "Tennis", "Hockey"],
     correct: 1,
-    movie: "Majili",
   },
   {
-    question: "In 'Orange', what does Ram decide to stop doing in relationships?",
-    options: ["Falling in love", "Telling lies", "Speaking to girls", "Making promises"],
-    correct: 2,
-    movie: "Orange",
-  },
-  {
-    question: "In 'Fidaa', where does Bhanumathi first meet Varun?",
-    options: ["College campus", "Village in Telangana", "Hospital", "Wedding"],
+    question: "In Wake Up Sid, where does Sid move to after leaving home?",
+    options: ["Delhi", "Mumbai friend's apartment", "Bangalore", "Pune"],
     correct: 1,
-    movie: "Fidaa",
   },
   {
-    question: "In 'Geetha Govindam', what is Vijay's profession?",
-    options: ["Teacher", "Engineer", "Lecturer", "Doctor"],
-    correct: 2,
-    movie: "Geetha Govindam",
+    question: "In Yeh Jawaani Hai Deewani, what is Bunny's dream profession?",
+    options: ["Doctor", "Photographer", "Engineer", "Writer"],
+    correct: 1,
   },
   {
-    question: "In 'Dear Comrade', what issue does Bharat fight for?",
+    question: "In Dear Comrade, what issue does Bharat fight for?",
     options: ["Women's rights", "Student politics", "Environmental justice", "Labor rights"],
     correct: 2,
-    movie: "Dear Comrade",
   },
   {
-    question: "In 'Love Story', what is Revanth's family background?",
+    question: "In Fidaa, where does Bhanumathi first meet Varun?",
+    options: ["College campus", "Village in Telangana", "Hospital", "Wedding"],
+    correct: 1,
+  },
+  {
+    question: "In Geetha Govindam, what is Vijay's profession?",
+    options: ["Teacher", "Engineer", "Lecturer", "Doctor"],
+    correct: 2,
+  },
+  {
+    question: "In Love Story, what is Revanth's family background?",
     options: ["Wealthy industrialists", "Middle-class farmers", "Film industry", "Political family"],
     correct: 1,
-    movie: "Love Story",
+  },
+  {
+    question: "What is the profession of the male lead in Jab We Met?",
+    options: ["Businessman", "Industrialist", "Doctor", "Teacher"],
+    correct: 1,
+  },
+  {
+    question: "In Raanjhanaa, where does Kundu first see Zoya?",
+    options: ["College", "Temple", "Through a window", "Market"],
+    correct: 2,
+  },
+  {
+    question: "Which 2013 film features the song 'Tum Hi Ho'?",
+    options: ["Yeh Jawaani Hai Deewani", "Aashiqui 2", "Raanjhanaa", "Aashiqui"],
+    correct: 1,
+  },
+  {
+    question: "In Barfi!, what disability does the protagonist have?",
+    options: ["Blindness", "Deaf and mute", "Mobility impairment", "None"],
+    correct: 1,
+  },
+  {
+    question: "Which film features the song 'Channa Mereya'?",
+    options: ["Yeh Jawaani Hai Deewani", "Ae Dil Hai Mushkil", "Barfi!", "Tamasha"],
+    correct: 1,
+  },
+  {
+    question: "In Sanam Teri Kasam, what is Saraswati's profession?",
+    options: ["Librarian", "Teacher", "Doctor", "Lawyer"],
+    correct: 0,
   },
 ];
 
-// Collectible movie ticket component
-function MovieTicket({ movie, index }: { movie: string; index: number }) {
-  return (
-    <motion.div
-      initial={{ scale: 0, rotate: -20 }}
-      animate={{ scale: 1, rotate: Math.random() * 10 - 5 }}
-      className="relative"
-      style={{ minWidth: '100px' }}
-    >
-      {/* Ticket body */}
-      <div
-        className="bg-white rounded-lg shadow-lg overflow-hidden"
-        style={{ border: '2px solid #C97B8A' }}
-      >
-        {/* Perforated top */}
-        <div className="h-2" style={{ background: 'linear-gradient(90deg, #C97B8A 50%, transparent 50%)', backgroundSize: '8px 100%' }} />
-
-        {/* Ticket content */}
-        <div className="p-3 text-center" style={{ background: '#FFFDFC' }}>
-          <div className="flex items-center justify-center gap-1 mb-1">
-            <Clapperboard className="w-3 h-3" style={{ color: '#C97B8A' }} />
-            <span className="font-inter text-xs font-semibold" style={{ color: '#1F2A44' }}>
-              TICKET #{index + 1}
-            </span>
-          </div>
-          <p className="font-sacramento text-sm font-bold" style={{ color: '#C97B8A' }}>
-            {movie}
-          </p>
-          <div className="flex justify-center gap-1 mt-1">
-            {[...Array(3)].map((_, i) => (
-              <Star key={i} className="w-2 h-2" style={{ color: '#C97B8A', fill: '#C97B8A' }} />
-            ))}
-          </div>
-        </div>
-
-        {/* Barcode */}
-        <div className="h-4 flex items-end justify-center gap-px pb-1" style={{ background: '#1F2A44' }}>
-          {[...Array(12)].map((_, i) => (
-            <div
-              key={i}
-              className="bg-white"
-              style={{ width: '2px', height: `${Math.random() * 60 + 40}%` }}
-            />
-          ))}
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
 export default function MovieSection({ onComplete, updateScore, movieScore }: MovieSectionProps) {
-  const [phase, setPhase] = useState<'intro' | 'quiz' | 'results' | 'complete'>('intro');
+  const [phase, setPhase] = useState<'intro' | 'quiz' | 'complete'>('intro');
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [correctAnswers, setCorrectAnswers] = useState(0);
-  const [collectedMovies, setCollectedMovies] = useState<string[]>([]);
-  const [showConfetti, setShowConfetti] = useState(false);
 
   const handleStartQuiz = () => {
     setPhase('quiz');
@@ -132,116 +138,77 @@ export default function MovieSection({ onComplete, updateScore, movieScore }: Mo
     setIsCorrect(correct);
 
     if (correct) {
-      setCorrectAnswers(prev => prev + 1);
-      updateScore(5);
-      setCollectedMovies(prev => [...prev, movieQuestions[currentQuestion].movie]);
+      setCorrectAnswers((prev) => prev + 1);
+      updateScore(1);
     }
 
     setTimeout(() => {
       if (currentQuestion < movieQuestions.length - 1) {
-        setCurrentQuestion(prev => prev + 1);
+        setCurrentQuestion((prev) => prev + 1);
         setSelectedAnswer(null);
         setIsCorrect(null);
       } else {
-        setShowConfetti(true);
         setTimeout(() => {
-          setPhase('results');
-        }, 1000);
+          setPhase('complete');
+          onComplete(correctAnswers, movieQuestions.length);
+        }, 500);
       }
     }, 1200);
-  };
-
-  const handleContinue = () => {
-    setPhase('complete');
-    onComplete();
   };
 
   const getOptionStyle = (index: number): React.CSSProperties => {
     const base: React.CSSProperties = {
       width: '100%',
       padding: '14px 18px',
-      borderRadius: '12px',
+      borderRadius: '8px',
       textAlign: 'left',
       fontFamily: 'Inter, sans-serif',
-      fontSize: '15px',
+      fontSize: '14px',
       cursor: selectedAnswer === null ? 'pointer' : 'default',
       transition: 'all 0.2s ease',
-      border: '2px solid transparent',
-      marginBottom: '10px',
+      border: '1px solid',
+      marginBottom: '8px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      background: '#FAF6F1',
+      background: C.paper,
     };
 
     if (selectedAnswer === null) {
-      return { ...base, borderColor: '#E6DDD4' };
+      return { ...base, borderColor: C.border };
     }
     if (index === movieQuestions[currentQuestion].correct) {
-      return { ...base, background: '#D1FAE5', borderColor: '#6EE7B7', color: '#065F46' };
+      return { ...base, background: '#F0FDF4', borderColor: '#86EFAC', color: '#166534' };
     }
     if (selectedAnswer === index) {
-      return { ...base, background: '#FEE2E2', borderColor: '#FCA5A5', color: '#991B1B' };
+      return { ...base, background: '#FEF2F2', borderColor: '#FCA5A5', color: '#991B1B' };
     }
-    return { ...base, background: '#F9FAFB', borderColor: 'transparent', opacity: 0.6 };
+    return { ...base, borderColor: C.border, opacity: 0.5 };
   };
 
   return (
     <section
       id="movies"
-      className="relative py-24 px-4 md:px-8 bg-gradient-to-b from-scrapbook-sage/20 to-scrapbook-blush/30"
+      className="relative py-16 md:py-24 px-4 md:px-8"
+      style={{ background: C.background }}
     >
-      <div className="absolute top-0 left-0 right-0 h-4" style={{ background: '#1F2A4410' }} />
-
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-2xl mx-auto">
         {/* Section header */}
-        <ScrollReveal className="text-center mb-16">
+        <div className="text-center mb-12">
           <motion.div
-            initial={{ rotate: -180 }}
-            whileInView={{ rotate: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center justify-center p-4 rounded-full mb-6"
-            style={{ background: '#D8D2F050' }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
           >
-            <Film className="w-10 h-10" style={{ color: '#C97B8A' }} />
-          </motion.div>
-
-          <p className="font-caveat text-xl mb-2" style={{ color: '#C97B8A' }}>
-            CHAPTER 3
-          </p>
-          <h2 className="font-playfair text-4xl md:text-5xl font-bold mb-4" style={{ color: '#1F2A44' }}>
-            Romantic <span style={{ color: '#C97B8A' }}>Cinema</span> Challenge
-          </h2>
-          <p className="font-caveat text-xl md:text-2xl max-w-xl mx-auto" style={{ color: '#6B7280' }}>
-            Match the romantic movies to collect all 8 tickets!
-          </p>
-        </ScrollReveal>
-
-        {/* Cinema Score Display */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex justify-center mb-8"
-        >
-          <div className="bg-white px-6 py-3 rounded-full shadow-lg flex items-center gap-3">
-            <Film className="w-5 h-5" style={{ color: '#C97B8A' }} />
-            <span className="font-caveat text-lg" style={{ color: '#6B7280' }}>
-              Cinema Score: <span className="font-bold" style={{ color: '#1F2A44' }}>{movieScore}</span> / 35
-            </span>
-          </div>
-        </motion.div>
-
-        {/* Collected Tickets Display */}
-        <div className="flex flex-wrap justify-center gap-3 mb-12 min-h-[80px]">
-          {collectedMovies.map((movie, i) => (
-            <MovieTicket key={`collected-${i}`} movie={movie} index={i} />
-          ))}
-          {collectedMovies.length === 0 && (
-            <p className="font-caveat text-lg" style={{ color: '#9CA3AF' }}>
-              Answer correctly to collect movie tickets!
+            <p className="font-caveat text-lg mb-2" style={{ color: C.textSecondary }}>
+              CHAPTER 3
             </p>
-          )}
+            <h2 className="font-playfair text-3xl md:text-4xl font-bold mb-3" style={{ color: C.textPrimary }}>
+              Romantic Cinema Challenge
+            </h2>
+            <p className="font-caveat text-lg" style={{ color: C.textSecondary }}>
+              How well do you know these love stories?
+            </p>
+          </motion.div>
         </div>
 
         <AnimatePresence mode="wait">
@@ -253,56 +220,53 @@ export default function MovieSection({ onComplete, updateScore, movieScore }: Mo
               exit={{ opacity: 0, y: -20 }}
               className="text-center"
             >
-              <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md mx-auto mb-8">
-                <div className="flex justify-center gap-4 mb-4">
-                  {['#C97B8A', '#C8DCC6', '#D8D2F0'].map((color, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ rotate: -10 }}
-                      animate={{ rotate: 0 }}
-                      whileHover={{ scale: 1.1, rotate: 5 }}
-                      className="w-20 h-14 rounded-lg shadow-md flex flex-col items-center justify-center relative overflow-hidden"
-                      style={{ background: '#FFFDFC', border: `2px solid ${color}` }}
-                    >
-                      <div
-                        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 w-3 h-4 rounded-full"
-                        style={{ background: `${color}40` }}
-                      />
-                      <div
-                        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 w-3 h-4 rounded-full"
-                        style={{ background: `${color}40` }}
-                      />
-                      <Clapperboard className="w-4 h-4" style={{ color }} />
-                      <span className="font-inter text-xs mt-1" style={{ color: '#6B7280' }}>TICKET</span>
-                    </motion.div>
-                  ))}
+              <div
+                className="bg-white rounded-2xl p-8 shadow-sm mb-8"
+                style={{ border: `1px solid ${C.border}` }}
+              >
+                <div className="flex justify-center mb-4">
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: '#E5E5E5' }}>
+                    <Clapperboard className="w-8 h-8" style={{ color: C.textPrimary }} />
+                  </div>
                 </div>
-                <p className="font-caveat text-lg" style={{ color: '#6B7280' }}>
-                  Collect 8 vintage cinema tickets by answering correctly
+
+                <h3 className="font-playfair text-xl font-semibold mb-3" style={{ color: C.textPrimary }}>
+                  Cinema Quiz
+                </h3>
+
+                <p className="font-cormorant text-base mb-4" style={{ color: C.textSecondary }}>
+                  20 questions about romantic Hindi and Telugu cinema — from classic love stories to modern favorites.
                 </p>
+
+                <div className="flex items-center justify-center gap-6 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Film className="w-4 h-4" style={{ color: C.textSecondary }} />
+                    <span style={{ color: C.textSecondary }}>20 Questions</span>
+                  </div>
+                </div>
               </div>
 
               <motion.button
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={handleStartQuiz}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '10px',
-                  background: '#1F2A44',
-                  color: '#FAF6F1',
+                  gap: '8px',
+                  background: C.textPrimary,
+                  color: '#FFFFFF',
                   border: 'none',
-                  borderRadius: '9999px',
-                  padding: '16px 36px',
+                  borderRadius: '999px',
+                  padding: '14px 32px',
                   fontFamily: 'Inter, sans-serif',
-                  fontWeight: 600,
-                  fontSize: '16px',
+                  fontWeight: 500,
+                  fontSize: '14px',
                   cursor: 'pointer',
-                  boxShadow: '0px 10px 25px rgba(31,42,68,0.15)',
                 }}
               >
-                <span>Start Cinema Quiz</span>
+                <span>Start Quiz</span>
+                <ChevronRight size={16} />
               </motion.button>
             </motion.div>
           )}
@@ -313,18 +277,17 @@ export default function MovieSection({ onComplete, updateScore, movieScore }: Mo
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="max-w-xl mx-auto"
             >
               {/* Progress bar */}
-              <div style={{ display: 'flex', gap: '6px', marginBottom: '24px' }}>
+              <div style={{ display: 'flex', gap: '4px', marginBottom: '24px' }}>
                 {movieQuestions.map((_, i) => (
                   <div
                     key={i}
                     style={{
                       flex: 1,
-                      height: '6px',
-                      borderRadius: '3px',
-                      background: i < currentQuestion ? '#C8DCC6' : i === currentQuestion ? '#C97B8A' : '#E6DDD4',
+                      height: '4px',
+                      borderRadius: '2px',
+                      background: i < currentQuestion ? '#A3A3A3' : i === currentQuestion ? C.textPrimary : '#E5E5E5',
                       transition: 'background 0.3s ease',
                     }}
                   />
@@ -332,19 +295,17 @@ export default function MovieSection({ onComplete, updateScore, movieScore }: Mo
               </div>
 
               <div
-                style={{
-                  background: 'white',
-                  padding: '32px',
-                  borderRadius: '20px',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-                  border: '3px solid #E6DDD4',
-                }}
+                className="bg-white rounded-2xl p-6 md:p-8 shadow-sm"
+                style={{ border: `1px solid ${C.border}` }}
               >
-                <p className="font-caveat text-lg text-center mb-2" style={{ color: '#C97B8A' }}>
-                  Question {currentQuestion + 1} of {movieQuestions.length}
-                </p>
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  <Film className="w-4 h-4" style={{ color: C.textSecondary }} />
+                  <p className="font-inter text-sm" style={{ color: C.textSecondary }}>
+                    Question {currentQuestion + 1} of {movieQuestions.length}
+                  </p>
+                </div>
 
-                <h3 className="font-playfair text-xl font-semibold text-center mb-6" style={{ color: '#1F2A44' }}>
+                <h3 className="font-playfair text-lg font-semibold text-center mb-6" style={{ color: C.textPrimary }}>
                   {movieQuestions[currentQuestion].question}
                 </h3>
 
@@ -352,8 +313,8 @@ export default function MovieSection({ onComplete, updateScore, movieScore }: Mo
                   {movieQuestions[currentQuestion].options.map((option, index) => (
                     <motion.button
                       key={`${currentQuestion}-${index}`}
-                      whileHover={{ scale: selectedAnswer === null ? 1.02 : 1 }}
-                      whileTap={{ scale: selectedAnswer === null ? 0.97 : 1 }}
+                      whileHover={{ scale: selectedAnswer === null ? 1.01 : 1 }}
+                      whileTap={{ scale: selectedAnswer === null ? 0.99 : 1 }}
                       onClick={() => handleAnswer(index)}
                       disabled={selectedAnswer !== null}
                       style={getOptionStyle(index)}
@@ -361,89 +322,24 @@ export default function MovieSection({ onComplete, updateScore, movieScore }: Mo
                       <span>{option}</span>
                       {selectedAnswer !== null && (
                         <>
-                          {index === movieQuestions[currentQuestion].correct && <Check size={18} color="#059669" />}
-                          {selectedAnswer === index && !isCorrect && <X size={18} color="#DC2626" />}
+                          {index === movieQuestions[currentQuestion].correct && (
+                            <Check size={18} color="#16A34A" />
+                          )}
+                          {selectedAnswer === index && !isCorrect && (
+                            <X size={18} color="#DC2626" />
+                          )}
                         </>
                       )}
                     </motion.button>
                   ))}
                 </div>
               </div>
-            </motion.div>
-          )}
 
-          {phase === 'results' && (
-            <motion.div
-              key="results"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, y: 20 }}
-              className="max-w-lg mx-auto"
-            >
-              <div
-                className="bg-white p-8 rounded-xl shadow-xl"
-                style={{ borderTop: '4px solid #C97B8A' }}
-              >
-                <div className="flex items-center gap-2 mb-6 justify-center">
-                  <Award className="w-6 h-6" style={{ color: '#C97B8A' }} />
-                  <h3 className="font-playfair text-xl font-semibold" style={{ color: '#1F2A44' }}>
-                    Cinema Collection Complete!
-                  </h3>
-                </div>
-
-                {/* Collected Tickets Grid */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="flex flex-wrap justify-center gap-3 mb-6 p-4 rounded-lg"
-                  style={{ background: '#FAF6F1' }}
-                >
-                  {collectedMovies.length > 0 ? (
-                    collectedMovies.map((movie, i) => (
-                      <MovieTicket key={`result-${i}`} movie={movie} index={i} />
-                    ))
-                  ) : (
-                    <p className="font-caveat text-lg" style={{ color: '#9CA3AF' }}>
-                      No tickets collected this time
-                    </p>
-                  )}
-                </motion.div>
-
-                <div className="text-center py-4 border-y-2 mb-6" style={{ borderColor: '#E6DDD4' }}>
-                  <p className="font-caveat text-xl mb-2" style={{ color: '#6B7280' }}>Cinema Score</p>
-                  <p className="font-playfair text-4xl font-bold" style={{ color: '#1F2A44' }}>
-                    {movieScore} / 35
-                  </p>
-                  <p className="font-caveat text-lg mt-2" style={{ color: '#C97B8A' }}>
-                    {correctAnswers} correct out of {movieQuestions.length}
-                  </p>
-                </div>
-
-                <motion.button
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleContinue}
-                  style={{
-                    display: 'block',
-                    marginLeft: 'auto',
-                    marginRight: 'auto',
-                    background: '#1F2A44',
-                    color: '#FAF6F1',
-                    border: 'none',
-                    borderRadius: '9999px',
-                    padding: '16px 36px',
-                    fontFamily: 'Inter, sans-serif',
-                    fontWeight: 600,
-                    fontSize: '15px',
-                    cursor: 'pointer',
-                    boxShadow: '0px 10px 25px rgba(31,42,68,0.15)',
-                  }}
-                >
-                  Unlock Next Chapter
-                </motion.button>
+              {/* Current Score */}
+              <div className="text-center mt-6">
+                <p className="font-caveat text-base" style={{ color: C.textSecondary }}>
+                  Score: {movieScore} / {movieQuestions.length}
+                </p>
               </div>
             </motion.div>
           )}
@@ -455,16 +351,16 @@ export default function MovieSection({ onComplete, updateScore, movieScore }: Mo
               animate={{ opacity: 1 }}
               className="text-center"
             >
-              <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full" style={{ background: '#C8DCC650' }}>
-                <Film className="w-5 h-5" style={{ color: '#C97B8A' }} />
-                <span className="font-caveat text-xl" style={{ color: '#6B7280' }}>Chapter 3 Complete!</span>
+              <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full" style={{ background: '#E5E5E5' }}>
+                <Award className="w-4 h-4" style={{ color: C.textPrimary }} />
+                <span className="font-caveat text-lg" style={{ color: C.textPrimary }}>
+                  Chapter 3 Complete! Score: {correctAnswers} / {movieQuestions.length}
+                </span>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
-
-      <Confetti show={showConfetti} />
     </section>
   );
 }

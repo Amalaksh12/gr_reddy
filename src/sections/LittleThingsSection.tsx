@@ -1,11 +1,19 @@
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useState } from 'react';
 import {
   Sparkles, Check, Coffee, Book, Flower2, Film, Music, Plane,
   Moon, Heart, Star, PenLine, Stethoscope, Building2
 } from 'lucide-react';
-import { ScrollReveal } from '../components/ui/ScrollReveal';
 import { Confetti } from '../components/CelebrationEffects';
+
+const C = {
+  background: '#F8F6F2',
+  paper: '#FFFFFF',
+  textPrimary: '#1E293B',
+  textSecondary: '#6B7280',
+  border: '#D6D3D1',
+  accent: '#C08497',
+};
 
 interface LittleThingsSectionProps {
   onComplete: () => void;
@@ -28,7 +36,7 @@ const allStickers = [
   { id: 'city', label: 'City Lights', icon: Building2 },
 ];
 
-export default function LittleThingsSection({ onComplete, updateScore, personalityScore }: LittleThingsSectionProps) {
+export default function LittleThingsSection({ onComplete, updateScore, personalityScore: _personalityScore }: LittleThingsSectionProps) {
   const [selectedStickers, setSelectedStickers] = useState<string[]>([]);
   const [phase, setPhase] = useState<'selecting' | 'complete'>('selecting');
   const [showConfetti, setShowConfetti] = useState(false);
@@ -55,51 +63,36 @@ export default function LittleThingsSection({ onComplete, updateScore, personali
   return (
     <section
       id="little-things"
-      className="relative py-24 px-4 md:px-8 bg-gradient-to-b from-scrapbook-lavender/20 to-scrapbook-cream"
+      className="relative py-16 md:py-24 px-4 md:px-8"
+      style={{ background: C.background }}
     >
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         {/* Section header */}
-        <ScrollReveal className="text-center mb-16">
+        <div className="text-center mb-12">
           <motion.div
-            initial={{ scale: 0 }}
-            whileInView={{ scale: 1 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center justify-center p-4 rounded-full mb-6"
-            style={{ background: '#F5D6D650' }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
           >
-            <Sparkles className="w-10 h-10" style={{ color: '#C97B8A' }} />
+            <p className="font-caveat text-lg mb-2" style={{ color: C.accent }}>
+              CHAPTER 5
+            </p>
+            <h2 className="font-playfair text-3xl md:text-4xl font-bold mb-3" style={{ color: C.textPrimary }}>
+              Things That Feel Like <span style={{ color: C.accent }}>Gayatri</span>
+            </h2>
+            <p className="font-caveat text-base" style={{ color: C.textSecondary }}>
+              Select 5 things that describe you best
+            </p>
           </motion.div>
-
-          <p className="font-caveat text-xl mb-2" style={{ color: '#C97B8A' }}>
-            CHAPTER 5
-          </p>
-          <h2 className="font-playfair text-4xl md:text-5xl font-bold mb-4" style={{ color: '#1F2A44' }}>
-            Things That Feel Like <span style={{ color: '#C97B8A' }}>Gayatri</span>
-          </h2>
-          <p className="font-caveat text-xl md:text-2xl max-w-xl mx-auto" style={{ color: '#6B7280' }}>
-            Select 5 things that describe you best
-          </p>
-        </ScrollReveal>
-
-        {/* Personality Score Display */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex justify-center mb-8"
-        >
-          <div className="bg-white px-6 py-3 rounded-full shadow-lg flex items-center gap-3">
-            <Sparkles className="w-5 h-5" style={{ color: '#C97B8A' }} />
-            <span className="font-caveat text-lg" style={{ color: '#6B7280' }}>
-              Personality Score: <span className="font-bold" style={{ color: '#1F2A44' }}>{personalityScore}</span> / 15
-            </span>
-          </div>
-        </motion.div>
+        </div>
 
         {phase === 'selecting' ? (
           <>
             {/* Sticker Board */}
-            <div className="bg-white rounded-2xl p-6 md:p-8 shadow-xl mb-8" style={{ border: '3px solid #E6DDD4' }}>
-              <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
+            <div
+              className="bg-white rounded-2xl p-6 md:p-8 shadow-sm mb-8"
+              style={{ border: `1px solid ${C.border}` }}
+            >
+              <div className="grid grid-cols-3 md:grid-cols-4 gap-4 md:gap-6">
                 {allStickers.map((sticker, index) => {
                   const isSelected = selectedStickers.includes(sticker.id);
                   const isDisabled = !isSelected && selectedStickers.length >= 5;
@@ -109,33 +102,34 @@ export default function LittleThingsSection({ onComplete, updateScore, personali
                     <motion.button
                       key={sticker.id}
                       initial={{ opacity: 0, scale: 0 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.05 }}
-                      whileHover={{ scale: isDisabled ? 1 : 1.1, rotate: isDisabled ? 0 : 5 }}
-                      whileTap={{ scale: isDisabled ? 1 : 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: index * 0.04 }}
+                      whileHover={{ scale: isDisabled ? 1 : 1.08 }}
+                      whileTap={{ scale: isDisabled ? 1 : 0.95 }}
                       onClick={() => !isDisabled && toggleSticker(sticker.id)}
-                      className="relative p-4 rounded-xl transition-all"
+                      className="relative p-4 rounded-xl"
                       style={{
-                        background: isSelected ? '#F5D6D630' : isDisabled ? '#F4EDE6' : '#FAF6F1',
-                        boxShadow: isSelected ? '0 4px 12px rgba(201, 123, 138, 0.3)' : 'none',
-                        border: `2px solid ${isSelected ? '#C97B8A' : isDisabled ? '#E6DDD4' : '#E6DDD4'}`,
+                        background: isSelected ? `${C.accent}10` : isDisabled ? '#F4F4F4' : C.paper,
+                        border: `2px solid ${isSelected ? C.accent : C.border}`,
                         opacity: isDisabled ? 0.5 : 1,
                         cursor: isDisabled ? 'not-allowed' : 'pointer',
+                        transition: 'all 0.2s ease',
                       }}
                     >
                       <Icon
-                        className="w-8 h-8 mx-auto mb-2"
-                        style={{ color: isSelected ? '#C97B8A' : '#6B7280' }}
+                        className="w-7 h-7 mx-auto mb-2"
+                        style={{ color: isSelected ? C.accent : C.textSecondary }}
                       />
-                      <span className="font-caveat text-sm block" style={{ color: '#2E3440' }}>{sticker.label}</span>
+                      <span className="font-caveat text-sm block" style={{ color: C.textPrimary }}>
+                        {sticker.label}
+                      </span>
 
                       {isSelected && (
                         <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
-                          className="absolute -top-2 -right-2 rounded-full p-1"
-                          style={{ background: '#C97B8A' }}
+                          className="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center"
+                          style={{ background: C.accent }}
                         >
                           <Check className="w-3 h-3 text-white" />
                         </motion.div>
@@ -146,70 +140,33 @@ export default function LittleThingsSection({ onComplete, updateScore, personali
               </div>
 
               <div className="text-center mt-6">
-                <span className="font-caveat text-lg" style={{ color: '#6B7280' }}>
+                <span className="font-caveat text-base" style={{ color: C.textSecondary }}>
                   Selected: {selectedStickers.length} / 5
                 </span>
               </div>
             </div>
 
-            {/* Scrapbook Preview */}
-            <AnimatePresence>
-              {selectedStickers.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="rounded-2xl p-6 shadow-xl mb-8"
-                  style={{
-                    background: '#FAF6F1',
-                    border: '2px dashed #C97B8A',
-                  }}
-                >
-                  <p className="font-caveat text-lg text-center mb-4" style={{ color: '#6B7280' }}>
-                    Your Personalized Page
-                  </p>
-                  <div className="flex flex-wrap justify-center gap-3">
-                    {selectedStickers.map((id) => {
-                      const sticker = allStickers.find((s) => s.id === id);
-                      if (!sticker) return null;
-                      const Icon = sticker.icon;
-                      return (
-                        <motion.div
-                          key={id}
-                          initial={{ scale: 0, rotate: -20 }}
-                          animate={{ scale: 1, rotate: Math.random() * 20 - 10 }}
-                          className="bg-white px-4 py-3 rounded-lg shadow-md"
-                        >
-                          <Icon className="w-6 h-6" style={{ color: '#C97B8A' }} />
-                        </motion.div>
-                      );
-                    })}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
             {/* Complete Button */}
             <div className="text-center">
               <motion.button
-                whileHover={selectedStickers.length >= 5 ? { scale: 1.05, y: -2 } : {}}
-                whileTap={selectedStickers.length >= 5 ? { scale: 0.95 } : {}}
+                whileHover={selectedStickers.length >= 5 ? { scale: 1.02 } : {}}
+                whileTap={selectedStickers.length >= 5 ? { scale: 0.98 } : {}}
                 onClick={handleComplete}
                 disabled={selectedStickers.length < 5}
                 style={{
-                  background: selectedStickers.length >= 5 ? '#1F2A44' : '#D1D5DB',
-                  color: selectedStickers.length >= 5 ? '#FAF6F1' : '#9CA3AF',
+                  background: selectedStickers.length >= 5 ? C.textPrimary : '#D1D5DB',
+                  color: selectedStickers.length >= 5 ? '#FFFFFF' : '#9CA3AF',
                   border: 'none',
-                  borderRadius: '9999px',
-                  padding: '16px 36px',
+                  borderRadius: '999px',
+                  padding: '14px 32px',
                   fontFamily: 'Inter, sans-serif',
-                  fontWeight: 600,
-                  fontSize: '15px',
+                  fontWeight: 500,
+                  fontSize: '14px',
                   cursor: selectedStickers.length >= 5 ? 'pointer' : 'not-allowed',
-                  boxShadow: selectedStickers.length >= 5 ? '0px 10px 25px rgba(31,42,68,0.15)' : 'none',
                   transition: 'all 0.3s ease',
                 }}
               >
-                {selectedStickers.length >= 5 ? 'Unlock Next Chapter' : `Select ${5 - selectedStickers.length} more`}
+                {selectedStickers.length >= 5 ? 'Continue' : `Select ${5 - selectedStickers.length} more`}
               </motion.button>
             </div>
           </>
@@ -219,32 +176,14 @@ export default function LittleThingsSection({ onComplete, updateScore, personali
             animate={{ opacity: 1 }}
             className="text-center"
           >
-            <div className="bg-white rounded-2xl p-8 shadow-xl inline-block mb-6">
-              <p className="font-caveat text-2xl mb-4" style={{ color: '#6B7280' }}>Your Things:</p>
-              <div className="flex gap-4 justify-center mb-4">
-                {selectedStickers.map((id) => {
-                  const sticker = allStickers.find((s) => s.id === id);
-                  if (!sticker) return null;
-                  const Icon = sticker.icon;
-                  return (
-                    <motion.div
-                      key={id}
-                      animate={{ y: [0, -5, 0] }}
-                      transition={{ duration: 2, repeat: Infinity, delay: Math.random() * 2 }}
-                      className="bg-white rounded-lg shadow-md p-3"
-                    >
-                      <Icon className="w-8 h-8" style={{ color: '#C97B8A' }} />
-                    </motion.div>
-                  );
-                })}
-              </div>
-              <p className="font-caveat text-xl" style={{ color: '#C97B8A' }}>
-                Personality Score: {personalityScore} / 15
-              </p>
-            </div>
-            <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full" style={{ background: '#C8DCC650' }}>
-              <Sparkles className="w-5 h-5" style={{ color: '#C97B8A' }} />
-              <span className="font-caveat text-xl" style={{ color: '#6B7280' }}>Chapter 5 Complete!</span>
+            <div
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-full"
+              style={{ background: '#E5E5E5' }}
+            >
+              <Sparkles className="w-4 h-4" style={{ color: C.textPrimary }} />
+              <span className="font-caveat text-lg" style={{ color: C.textPrimary }}>
+                Chapter 5 Complete!
+              </span>
             </div>
           </motion.div>
         )}

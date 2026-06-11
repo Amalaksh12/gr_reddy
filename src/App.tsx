@@ -7,34 +7,18 @@ import MusicSection from './sections/MusicSection';
 import LittleThingsSection from './sections/LittleThingsSection';
 import GreetingCardSection from './sections/GreetingCardSection';
 import ClosingPage from './sections/ClosingPage';
-import { motion } from 'framer-motion';
-import { Lock, Check, BookOpen, Stethoscope, Film, Music as MusicIcon, Sparkles, Cake, Award } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, ArrowRight } from 'lucide-react';
 import { ChapterProvider, useChapters } from './context/ChapterContext';
-import { Toast } from './components/ui/Toast';
 
 const C = {
-  cream: '#FAF6F1',
-  blush: '#F5D6D6',
-  rose: '#C97B8A',
-  sage: '#A7C4A0',
-  lavender: '#B9AEDC',
-  warm: '#E6B98D',
-  beige: '#E9DFD2',
-  navy: '#1F2A44',
-  creamDark: '#F4EDE6',
-  textPrimary: '#374151',
-  textSecondary: '#4B5563',
-  textMuted: '#6B7280',
+  cream: '#F8F6F2',
+  paper: '#FFFFFF',
+  textPrimary: '#1E293B',
+  textSecondary: '#6B7280',
+  border: '#D6D3D1',
+  accent: '#C08497',
 };
-
-const chapters = [
-  { id: 1, title: 'The Story of Gayatri Devi Reddy', icon: BookOpen },
-  { id: 2, title: 'The White Coat Chronicles', icon: Stethoscope },
-  { id: 3, title: 'Romantic Cinema Challenge', icon: Film },
-  { id: 4, title: 'The Soundtrack of Her Life', icon: MusicIcon },
-  { id: 5, title: 'Things That Feel Like Gayatri', icon: Sparkles },
-  { id: 6, title: 'The Birthday Scrapbook', icon: Cake },
-];
 
 function ScrapbookContent() {
   const {
@@ -44,11 +28,11 @@ function ScrapbookContent() {
     unlockChapter,
     setCurrentChapter,
     updateScore,
-    getTotalScore,
   } = useChapters();
 
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState({ title: '', subtitle: '' });
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [completedChapter, setCompletedChapter] = useState<number | null>(null);
+  const [chapterScore, setChapterScore] = useState({ score: 0, max: 0 });
 
   useEffect(() => {
     const hash = window.location.hash;
@@ -63,25 +47,22 @@ function ScrapbookContent() {
   const handleUnlockChapter = useCallback((chapter: number) => {
     unlockChapter(chapter);
     setCurrentChapter(chapter);
-
-    // Show subtle toast instead of large popup
-    setToastMessage({
-      title: `Chapter ${chapter} Unlocked!`,
-      subtitle: chapters[chapter - 1]?.title,
-    });
-    setShowToast(true);
-
-    setTimeout(() => {
-      setShowToast(false);
-    }, 2500);
   }, [unlockChapter, setCurrentChapter]);
 
-  const handleChapterComplete = useCallback(() => {
-    const nextChapter = currentChapter + 1;
-    if (nextChapter <= 6) {
-      handleUnlockChapter(nextChapter);
+  const handleChapterComplete = useCallback((chapterNum: number, score: number, max: number) => {
+    setCompletedChapter(chapterNum);
+    setChapterScore({ score, max });
+    setShowCompletionModal(true);
+  }, []);
+
+  const handleContinueFromModal = useCallback(() => {
+    setShowCompletionModal(false);
+    if (completedChapter && completedChapter < 6) {
+      setTimeout(() => {
+        handleUnlockChapter(completedChapter + 1);
+      }, 100);
     }
-  }, [currentChapter, handleUnlockChapter]);
+  }, [completedChapter, handleUnlockChapter]);
 
   const handleBeginJourney = useCallback(() => {
     handleUnlockChapter(2);
@@ -101,174 +82,22 @@ function ScrapbookContent() {
     }
   }, [currentChapter]);
 
-  const totalScore = getTotalScore();
+  const getChapterTitle = (num: number): string => {
+    const titles = [
+      '',
+      'The Story of Gayatri',
+      'Doctor Quiz Complete',
+      'Cinema Quiz Complete',
+      'Music Chapter Complete',
+      'Personality Complete',
+      'The Final Letter',
+    ];
+    return titles[num] || '';
+  };
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: C.cream, overflowX: 'hidden' }}>
-      {/* Global Score Display */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="hidden md:flex fixed left-4 top-1/2 -translate-y-1/2 z-40"
-      >
-        <div
-          className="bg-white rounded-2xl shadow-xl p-4"
-          style={{ border: '3px solid #E6DDD4', backgroundColor: '#FFFDFC' }}
-        >
-          <div className="flex items-center gap-2 mb-3">
-            <Award className="w-5 h-5" style={{ color: C.rose }} />
-            <span className="font-caveat text-lg font-semibold" style={{ color: C.textPrimary }}>
-              Current Score
-            </span>
-          </div>
-          <p className="font-playfair text-3xl font-bold text-center" style={{ color: C.navy }}>
-            {totalScore} / 120
-          </p>
-          <div className="mt-3 pt-3 text-xs space-y-1" style={{ borderTop: '1px solid #E6DDD4' }}>
-            {[
-              { label: 'Doctor', score: scores.doctor, max: 20 },
-              { label: 'Cinema', score: scores.movies, max: 35 },
-              { label: 'Melody', score: scores.music, max: 50 },
-              { label: 'Personality', score: scores.personality, max: 15 },
-            ].map(item => (
-              <div key={item.label} className="flex justify-between">
-                <span style={{ color: C.textSecondary }}>{item.label}</span>
-                <span className="font-semibold" style={{ color: C.navy }}>
-                  {item.score}/{item.max}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Scrapbook Bookmark Sidebar */}
-      <div
-        className="hidden md:flex"
-        style={{
-          position: 'fixed',
-          right: 0,
-          top: '50%',
-          transform: 'translateY(-50%)',
-          zIndex: 50,
-          flexDirection: 'column',
-          alignItems: 'flex-end',
-          gap: '2px',
-        }}
-      >
-        <div
-          style={{
-            position: 'absolute',
-            left: '2px',
-            top: 0,
-            bottom: 0,
-            width: '3px',
-            background: `linear-gradient(to bottom, ${C.blush}, ${C.rose}, ${C.blush})`,
-            borderRadius: '2px',
-          }}
-        />
-
-        {chapters.map((chapter, index) => {
-          const isUnlocked = unlockedChapters.includes(chapter.id);
-          const isCurrent = currentChapter === chapter.id;
-          const isComplete = isUnlocked && currentChapter > chapter.id;
-          const Icon = chapter.icon;
-
-          const bookmarkBg = isCurrent
-            ? C.rose
-            : isComplete
-            ? C.sage
-            : isUnlocked
-            ? C.navy
-            : '#CBD5E1';
-
-          return (
-            <motion.div
-              key={chapter.id}
-              initial={{ x: 100, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: index * 0.08 }}
-              className="relative group"
-              style={{ marginTop: index === 0 ? 0 : '-4px' }}
-            >
-              <motion.button
-                whileHover={{ x: -8 }}
-                transition={{ type: 'spring', stiffness: 300 }}
-                onClick={() => isUnlocked && setCurrentChapter(chapter.id)}
-                style={{
-                  position: 'relative',
-                  width: '44px',
-                  height: '60px',
-                  backgroundColor: bookmarkBg,
-                  clipPath: 'polygon(0 0, 100% 0, 100% 80%, 50% 100%, 0 80%)',
-                  boxShadow: isCurrent
-                    ? `0 4px 16px rgba(201, 123, 138, 0.6)`
-                    : '0 2px 8px rgba(0,0,0,0.15)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: isUnlocked ? 'pointer' : 'default',
-                  border: 'none',
-                  outline: 'none',
-                  transition: 'background-color 0.3s ease',
-                }}
-              >
-                {isComplete ? (
-                  <Check size={16} color="white" />
-                ) : isUnlocked ? (
-                  <Icon size={18} color="white" />
-                ) : (
-                  <Lock size={14} color="#64748B" />
-                )}
-              </motion.button>
-
-              <div
-                className="opacity-0 group-hover:opacity-100 pointer-events-none"
-                style={{
-                  position: 'absolute',
-                  right: '52px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  transition: 'opacity 0.2s',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                <div
-                  style={{
-                    background: C.navy,
-                    color: C.cream,
-                    padding: '8px 14px',
-                    borderRadius: '10px',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                  }}
-                >
-                  <p style={{ fontFamily: 'Caveat, cursive', fontSize: '13px', margin: 0, opacity: 0.9 }}>
-                    Ch. {chapter.id}
-                  </p>
-                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', fontWeight: 600, margin: 0 }}>
-                    {chapter.title}
-                  </p>
-                </div>
-                <div
-                  style={{
-                    position: 'absolute',
-                    right: '-6px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    width: 0,
-                    height: 0,
-                    borderTop: '6px solid transparent',
-                    borderBottom: '6px solid transparent',
-                    borderLeft: `6px solid ${C.navy}`,
-                  }}
-                />
-              </div>
-            </motion.div>
-          );
-        })}
-      </div>
-
-      {/* Mobile Progress Bar */}
+      {/* Mobile Progress Indicator - Simple dots only */}
       <div
         className="md:hidden"
         style={{
@@ -278,53 +107,175 @@ function ScrapbookContent() {
           right: 0,
           zIndex: 50,
           background: 'rgba(255,255,255,0.98)',
-          backdropFilter: 'blur(8px)',
-          borderTop: `2px solid ${C.rose}`,
-          padding: '10px 20px',
+          borderTop: `1px solid ${C.border}`,
+          padding: '12px 20px',
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '10px',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div className="flex items-center gap-2">
-            <Award className="w-4 h-4" style={{ color: C.rose }} />
-            <span className="font-caveat text-lg font-semibold" style={{ color: C.textPrimary }}>
-              {totalScore} / 120
-            </span>
-          </div>
-          <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-            {chapters.map((chapter) => {
-              const isUnlocked = unlockedChapters.includes(chapter.id);
-              const isCurrent = currentChapter === chapter.id;
-              const isComplete = isUnlocked && currentChapter > chapter.id;
+        {[1, 2, 3, 4, 5, 6].map((ch) => {
+          const isUnlocked = unlockedChapters.includes(ch);
+          const isCurrent = currentChapter === ch;
+          const isComplete = isUnlocked && currentChapter > ch;
 
-              return (
-                <div
-                  key={chapter.id}
-                  style={{
-                    width: isCurrent ? '20px' : '10px',
-                    height: '10px',
-                    borderRadius: '5px',
-                    backgroundColor: isCurrent ? C.rose : isComplete ? C.sage : isUnlocked ? C.navy : '#CBD5E1',
-                    border: isCurrent ? `2px solid ${C.rose}` : '2px solid transparent',
-                    transition: 'all 0.3s ease',
-                    boxShadow: isCurrent ? `0 0 8px rgba(201, 123, 138, 0.5)` : 'none',
-                  }}
-                />
-              );
-            })}
-          </div>
-        </div>
+          return (
+            <div
+              key={ch}
+              style={{
+                width: isCurrent ? '24px' : '8px',
+                height: '8px',
+                borderRadius: '4px',
+                backgroundColor: isComplete ? '#A3A3A3' : isCurrent ? C.textPrimary : '#E5E5E5',
+                transition: 'all 0.3s ease',
+              }}
+            />
+          );
+        })}
       </div>
 
-      {/* Toast Notification */}
-      <Toast
-        show={showToast}
-        message={toastMessage.title}
-        subMessage={toastMessage.subtitle}
-        icon={Sparkles}
-      />
+      {/* Completion Modal */}
+      <AnimatePresence>
+        {showCompletionModal && completedChapter && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 100,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'rgba(0,0,0,0.3)',
+              padding: '20px',
+            }}
+            onClick={handleContinueFromModal}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: C.paper,
+                borderRadius: '16px',
+                padding: '32px',
+                maxWidth: '360px',
+                width: '100%',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+                border: `1px solid ${C.border}`,
+              }}
+            >
+              {/* Close button */}
+              <button
+                onClick={handleContinueFromModal}
+                style={{
+                  position: 'absolute',
+                  top: '16px',
+                  right: '16px',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '4px',
+                }}
+              >
+                <X size={20} style={{ color: C.textSecondary }} />
+              </button>
+
+              {/* Check icon */}
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.1, type: 'spring' }}
+                style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '50%',
+                  background: '#E5E5E5',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 16px',
+                }}
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={C.textPrimary} strokeWidth="2.5">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </motion.div>
+
+              <h3
+                style={{
+                  fontFamily: 'Playfair Display, serif',
+                  fontSize: '22px',
+                  fontWeight: 600,
+                  color: C.textPrimary,
+                  textAlign: 'center',
+                  marginBottom: '8px',
+                }}
+              >
+                {getChapterTitle(completedChapter)}
+              </h3>
+
+              {completedChapter >= 2 && completedChapter <= 5 && (
+                <p
+                  style={{
+                    fontFamily: 'Caveat, cursive',
+                    fontSize: '20px',
+                    color: C.textSecondary,
+                    textAlign: 'center',
+                    marginBottom: '24px',
+                  }}
+                >
+                  Score: {chapterScore.score} / {chapterScore.max}
+                </p>
+              )}
+
+              {completedChapter === 4 && (
+                <p
+                  style={{
+                    fontFamily: 'Caveat, cursive',
+                    fontSize: '18px',
+                    color: C.textSecondary,
+                    textAlign: 'center',
+                    marginBottom: '24px',
+                  }}
+                >
+                  Playlist Created
+                </p>
+              )}
+
+              <button
+                onClick={handleContinueFromModal}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  width: '100%',
+                  padding: '14px 24px',
+                  background: C.textPrimary,
+                  color: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: '999px',
+                  fontFamily: 'Inter, sans-serif',
+                  fontWeight: 500,
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s',
+                }}
+              >
+                <span>Continue</span>
+                <ArrowRight size={16} />
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Main Content */}
-      <main style={{ paddingBottom: '80px' }} className="md:pb-0">
+      <main style={{ paddingBottom: '60px' }} className="md:pb-0">
         {currentChapter >= 1 && (
           <motion.div
             key={`ch1-${currentChapter}`}
@@ -343,7 +294,7 @@ function ScrapbookContent() {
             transition={{ duration: 0.6 }}
           >
             <DoctorSection
-              onComplete={handleChapterComplete}
+              onComplete={(score, max) => handleChapterComplete(2, score, max)}
               updateScore={(points) => updateScore('doctor', points)}
               doctorScore={scores.doctor}
             />
@@ -358,7 +309,7 @@ function ScrapbookContent() {
             transition={{ duration: 0.6 }}
           >
             <MovieSection
-              onComplete={handleChapterComplete}
+              onComplete={(score, max) => handleChapterComplete(3, score, max)}
               updateScore={(points) => updateScore('movies', points)}
               movieScore={scores.movies}
             />
@@ -373,7 +324,7 @@ function ScrapbookContent() {
             transition={{ duration: 0.6 }}
           >
             <MusicSection
-              onComplete={handleChapterComplete}
+              onComplete={() => handleChapterComplete(4, 0, 0)}
               updateScore={(points) => updateScore('music', points)}
               musicScore={scores.music}
             />
@@ -388,7 +339,7 @@ function ScrapbookContent() {
             transition={{ duration: 0.6 }}
           >
             <LittleThingsSection
-              onComplete={handleChapterComplete}
+              onComplete={() => handleChapterComplete(5, 0, 0)}
               updateScore={(points) => updateScore('personality', points)}
               personalityScore={scores.personality}
             />
@@ -402,7 +353,7 @@ function ScrapbookContent() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <GreetingCardSection scores={scores} totalScore={totalScore} />
+            <GreetingCardSection />
           </motion.div>
         )}
 
